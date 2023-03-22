@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -83,14 +85,12 @@ public class PlayerController : MonoBehaviour
             elapsedTimeShoot = 0;
             Shoot();
         }
-        //mouvement
-        transform.Translate(playerSpeed * Time.deltaTime * direction.normalized);
-        //mouvements limitations
-        MovePlayerInScreenOnly();
     }
 
-    void MovePlayerInScreenOnly()
+    void Movement()
     {
+        transform.Translate(playerSpeed * Time.deltaTime * direction.normalized);
+
         //I want to be able to move everywhere on screen
         if (transform.position.x >= maxX)
         {
@@ -110,7 +110,8 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector2(transform.position.x, minY);
         }
     }
-    private GameObject CreateProjectile(Vector3 position, Quaternion rotation)
+
+    private GameObject CreateBullet(Vector3 position, Quaternion rotation)
     {
         GameObject projectile = bulletPool.GetElement();
         projectile.transform.position = transform.position;
@@ -131,18 +132,18 @@ public class PlayerController : MonoBehaviour
 
         if (playerHealth == 1)
         {
-            CreateProjectile(new Vector2(0, 0.5f), Quaternion.identity);
+            CreateBullet(new Vector2(0, 0.5f), Quaternion.identity);
         }
         else if (playerHealth == 2)
         {
-            CreateProjectile(new Vector2(-0.50f, 0.4f), Quaternion.identity);
-            CreateProjectile(new Vector2(0.50f, 0.4f), Quaternion.identity);
+            CreateBullet(new Vector2(-0.50f, 0.4f), Quaternion.identity);
+            CreateBullet(new Vector2(0.50f, 0.4f), Quaternion.identity);
         }
         else if (playerHealth >= 3)
         {
-            CreateProjectile(new Vector2(0, 0.5f), Quaternion.identity);
-            CreateProjectile(new Vector2(0.10f, 0.4f), Quaternion.Euler(0, 0, -15));
-            CreateProjectile(new Vector2(-0.10f, 0.4f), Quaternion.Euler(0, 0, 15));
+            CreateBullet(new Vector2(0, 0.5f), Quaternion.identity);
+            CreateBullet(new Vector2(0.10f, 0.4f), Quaternion.Euler(0, 0, -15));
+            CreateBullet(new Vector2(-0.10f, 0.4f), Quaternion.Euler(0, 0, 15));
         }
     }
 

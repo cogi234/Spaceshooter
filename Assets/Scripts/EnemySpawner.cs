@@ -6,7 +6,6 @@ public class EnemySpawner : MonoBehaviour
     public float waveMotionRadPerSecond;
     public float delay;
 
-    [HideInInspector] public float difficulty;
     [HideInInspector] public MyObjectPool enemyPool;
     [HideInInspector] public float enemySpeed;
     [HideInInspector] public float enemyHealth;
@@ -25,14 +24,14 @@ public class EnemySpawner : MonoBehaviour
     {
         GameObject enemy = enemyPool.GetElement();
         enemy.transform.position = transform.position;
-        enemy.GetComponent<ConstantMovement>().speed = enemySpeed * difficulty;
+        enemy.GetComponent<ConstantMovement>().speed = enemySpeed;
         WaveMotion wave = enemy.GetComponent<WaveMotion>();
         wave.direction = waveMotionDirection;
-        wave.radPerSecond = waveMotionRadPerSecond * difficulty;
+        wave.radPerSecond = waveMotionRadPerSecond;
         EnemyController controller = enemy.GetComponent<EnemyController>();
         controller.health = Mathf.FloorToInt(enemyHealth);
-        controller.shootCooldown = enemyShootCooldown / difficulty;
-        controller.bulletSpeed = enemyBulletSpeed * difficulty;
+        controller.shootCooldown = enemyShootCooldown;
+        controller.bulletSpeed = enemyBulletSpeed;
         enemy.SetActive(true);
 
         Destroy(gameObject);

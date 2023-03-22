@@ -9,13 +9,9 @@ public class SpawningController : MonoBehaviour
     [SerializeField] GameObject powerUpPrefab;
 
     /// <summary>
-    /// A multiplier on a bunch of stuff:
-    ///  -Meteor speed
+    /// A multiplier on spawning chances
     ///  -Meteor chance
-    ///  -Enemy speed
     ///  -Enemy chance
-    ///  -Enemy bullet speed
-    ///  -Enemy shooting speed
     /// </summary>
     [SerializeField] float difficulty = 1;
     public float Difficulty { get => difficulty; }
@@ -50,7 +46,7 @@ public class SpawningController : MonoBehaviour
     /// <summary>
     /// How many shots an enemy survives
     /// </summary>
-    [SerializeField] float enemyHealth = 1.5f;
+    [SerializeField] float enemyHealth = 1;
     /// <summary>
     /// How much time between shots
     /// </summary>
@@ -72,7 +68,7 @@ public class SpawningController : MonoBehaviour
     private void Awake()
     {
         spawningY = Camera.main.orthographicSize + 1;
-        maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 0.5f;
+        maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 1.5f;
         minX = -maxX;
 
         meteorPool = GameObject.Find("ObjPoolMeteor").GetComponent<MyObjectPool>();
@@ -96,7 +92,7 @@ public class SpawningController : MonoBehaviour
     {
         GameObject meteor = meteorPool.GetElement();
         meteor.transform.position = new Vector2(Random.Range(minX, maxX), spawningY);
-        meteor.GetComponent<ConstantMovement>().speed = meteorSpeed * difficulty;//Vitesse augmente avec la difficulte
+        meteor.GetComponent<ConstantMovement>().speed = meteorSpeed;
         meteor.GetComponent<ConstantRotation>().rotationSpeed = Random.Range(-90f, 90f);//Rotation aleatoire
         meteor.GetComponent<EnemyController>().health = Mathf.FloorToInt(meteorHealth);
         meteor.SetActive(true);
@@ -122,7 +118,6 @@ public class SpawningController : MonoBehaviour
 
         foreach (EnemySpawner spawner in spawners)
         {
-            spawner.difficulty = difficulty;
             spawner.enemyPool = enemyPool;
             spawner.enemySpeed = enemySpeed;
             spawner.enemyHealth = enemyHealth;

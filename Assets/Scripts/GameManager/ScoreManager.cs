@@ -6,7 +6,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI scoreText;
     SpawningController spawningController;
 
-    [SerializeField] int scoreToPowerUp = 50;
+    [SerializeField] int scoreToPowerUp = 250;
+    [SerializeField] int scoreToPowerUpMultiplier = 2;
 
     private void Awake()
     {
@@ -25,7 +26,7 @@ public class ScoreManager : MonoBehaviour
 
             if (score >= scoreToPowerUp)
             {
-                scoreToPowerUp *= 5;
+                scoreToPowerUp *= scoreToPowerUpMultiplier;
                 spawningController.SpawnPowerUp();
             }
         }
