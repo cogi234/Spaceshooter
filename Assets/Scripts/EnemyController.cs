@@ -3,25 +3,33 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    //ObjectPoolComponent bulletPool;
     MyObjectPool bulletPool;
     ScoreManager scoreManager;
     Transform playerTransform;
     AudioSource audioSource;
-    public int health = 1;
     [SerializeField] int points;
 
+    //Les parametres de tir
+    // Est-ce que cet ennemi va tirer
     [SerializeField] bool shooting;
+    // Le temps entre les tirs
     public float shootCooldown;
     float shootTime;
-    [SerializeField] Sprite bulletSprite;
+    //La vitesse des balles
     public float bulletSpeed;
 
+    [SerializeField] Sprite bulletSprite;
     [SerializeField] GameObject explosionPrefab;
+    HealthComponent healthComponent;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        healthComponent = GetComponent<HealthComponent>();
+    }
 
     private void OnEnable()
     {
-        audioSource = GetComponent<AudioSource>();
         scoreManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<ScoreManager>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         if (shooting)
@@ -31,14 +39,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int dmg)
-    {
-        health -= dmg;
-
-        if (health <= 0)
-            Death();
-    }
-    void Death()
+    public void Death()
     {
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         scoreManager.Score += points;
@@ -75,11 +76,11 @@ public class EnemyController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        //Le joueur prends du dommage en contact avec un ennemi
+        //Lors d'un contact, le joueur et l'ennemi prennent du dommage
         if (col.gameObject.tag == "Player")
         {
-            col.gameObject.GetComponent<PlayerController>().TakeDamage();
-            TakeDamage(1);
+            col.gameObject.GetComponent<HealthComponent>().TakeDamage(1);
+            healthComponent.TakeDamage(1);
         }
     }
 }

@@ -32,7 +32,7 @@ public class SpawningController : MonoBehaviour
     /// <summary>
     /// How many shots a meteor survives
     /// </summary>
-    [SerializeField] float meteorHealth = 1;
+    [SerializeField] int meteorHealth = 1;
 
     //Enemy Stuff
     /// <summary>
@@ -46,7 +46,7 @@ public class SpawningController : MonoBehaviour
     /// <summary>
     /// How many shots an enemy survives
     /// </summary>
-    [SerializeField] float enemyHealth = 1;
+    [SerializeField] int enemyHealth = 1;
     /// <summary>
     /// How much time between shots
     /// </summary>
@@ -94,7 +94,8 @@ public class SpawningController : MonoBehaviour
         meteor.transform.position = new Vector2(Random.Range(minX, maxX), spawningY);
         meteor.GetComponent<ConstantMovement>().speed = meteorSpeed;
         meteor.GetComponent<ConstantRotation>().rotationSpeed = Random.Range(-90f, 90f);//Rotation aleatoire
-        meteor.GetComponent<EnemyController>().health = Mathf.FloorToInt(meteorHealth);
+        meteor.GetComponent<HealthComponent>().startingHealth = meteorHealth;
+        meteor.GetComponent<HealthComponent>().maxHealth = meteorHealth;
         meteor.SetActive(true);
     }
 

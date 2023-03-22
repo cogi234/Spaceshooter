@@ -7,46 +7,54 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    //Pour le tir
+    MyObjectPool bulletPool;
     [SerializeField] float shootCooldown = 0.5f;
     [SerializeField] Sprite bulletSprite;
     [SerializeField] float bulletSpeed;
-    [SerializeField] float damageCooldown = 2;
-    [SerializeField] float playerSpeed = 6;
-    MyObjectPool bulletPool;
-
-    float elapsedTimeDamage;
     float elapsedTimeShoot;
 
-    int playerHealth = 1;
-    //inputs
+    //Pour le mouvement
+    // Inputs
     PlayerInputs inputs;
     InputAction moveAction;
     InputAction shootAction;
-    //limitations of player
+    // Vitesse du joueur
+    [SerializeField] float playerSpeed = 6;
+    // Les limites de l'ecran
     float minY, maxY, minX, maxX;
-    //mouvements direction
+    // La direction du mouvement
     Vector2 direction = Vector2.zero;
 
+    //Pour le son
     AudioSource audioSource;
+
+    //La vie du joueur
+    HealthComponent healthComponent;
+
 
     void Awake()
     {
+        //On trouve les limites de l'ecran
         maxY = Camera.main.orthographicSize - 0.5f;
         minY = -maxY;
         maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 0.5f;
         minX = -maxX;
 
+        //On initialise les inputs
         inputs = new PlayerInputs();
         moveAction = inputs.FindAction("Move");
         shootAction = inputs.FindAction("Shoot");
 
+        //On initialise les references
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
-
         audioSource = GetComponent<AudioSource>();
+        healthComponent = GetComponent<HealthComponent>();
     }
 
     private void OnEnable()
     {
+        //On active les inputs
         shootAction.Enable();
         moveAction.Enable();
         moveAction.performed += (InputAction.CallbackContext ctx) =>
@@ -62,6 +70,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
+        //On desactive les inputs
         shootAction.Disable();
         moveAction.Disable();
         moveAction.performed -= (InputAction.CallbackContext ctx) =>
@@ -76,22 +85,25 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        //damage
-        elapsedTimeDamage += Time.deltaTime;
-        //shoot
+        //On regarde si on veut et peut tirer
         elapsedTimeShoot += Time.deltaTime;
         if (shootAction.IsPressed() && elapsedTimeShoot >= shootCooldown)
         {
             elapsedTimeShoot = 0;
             Shoot();
         }
+
+        //On s'occupe du mouvement
+        Movement();
     }
 
     void Movement()
     {
+        //On bouge le joueur dans la direction des controles
         transform.Translate(playerSpeed * Time.deltaTime * direction.normalized);
 
-        //I want to be able to move everywhere on screen
+        //Si le joueur bouge hors de l'ecran, on le met sur le bord
+        //Horizontalement
         if (transform.position.x >= maxX)
         {
             transform.position = new Vector2(maxX, transform.position.y);
@@ -100,7 +112,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = new Vector2(minX, transform.position.y);
         }
-
+        //Verticalement
         if (transform.position.y >= maxY)
         {
             transform.position = new Vector2(transform.position.x, maxY);
@@ -111,6 +123,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// On prends une balle de l'object pool et lui donne la position et rotation selectionnee,
+    /// en plus de lui dire d'attaquer les ennemis et de lui donner le bon sprite
+    /// </summary>
+    /// <returns>La balle qu'on vient de creer</returns>
     private GameObject CreateBullet(Vector3 position, Quaternion rotation)
     {
         GameObject projectile = bulletPool.GetElement();
@@ -126,20 +143,23 @@ public class PlayerController : MonoBehaviour
     }
     private void Shoot()
     {
-        if (playerHealth <= 0) return;
+        //Si on n'a pas de vie, on ne tire pas
+        if (healthComponent.Health <= 0) return;
 
+        //On joue l'effet sonore du tir
         audioSource.Play();
 
-        if (playerHealth == 1)
+        //On tire un nombre de balles correspondant a la vie
+        if (healthComponent.Health == 1)
         {
             CreateBullet(new Vector2(0, 0.5f), Quaternion.identity);
         }
-        else if (playerHealth == 2)
+        else if (healthComponent.Health == 2)
         {
             CreateBullet(new Vector2(-0.50f, 0.4f), Quaternion.identity);
             CreateBullet(new Vector2(0.50f, 0.4f), Quaternion.identity);
         }
-        else if (playerHealth >= 3)
+        else if (healthComponent.Health >= 3)
         {
             CreateBullet(new Vector2(0, 0.5f), Quaternion.identity);
             CreateBullet(new Vector2(0.10f, 0.4f), Quaternion.Euler(0, 0, -15));
@@ -147,25 +167,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void PowerUp()
-    {
-        playerHealth++;
-    }
-
     public void TakeDamage()
     {
-        if (damageCooldown <= elapsedTimeDamage)
-        {
-            elapsedTimeDamage = 0;
-            playerHealth--;
-            if (playerHealth == 0)
-            {
-                Death();
-            }
-        }
+
     }
-    void Death()
+    public void Death()
     {
-        SceneManager.LoadScene(0);
+        gameObject.SetActive(false);
     }
 }

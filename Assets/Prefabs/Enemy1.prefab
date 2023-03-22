@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8502207953828243872}
   - component: {fileID: 3865893782736497680}
   - component: {fileID: 823814055449988710}
+  - component: {fileID: 232485372983608523}
   - component: {fileID: 8502207953823719026}
   - component: {fileID: 3787254894630600570}
   - component: {fileID: 7566595278820409432}
@@ -37,7 +38,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &3865893782736497680
 CircleCollider2D:
@@ -86,14 +87,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48d5135ac31506428022f26eba4acb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1
   points: 30
   shooting: 1
   shootCooldown: 3
-  bulletSprite: {fileID: 21300000, guid: 8b2b3d2ad596be649b588b1c90b79c00, type: 3}
   bulletSpeed: 6
+  bulletSprite: {fileID: 21300000, guid: 8b2b3d2ad596be649b588b1c90b79c00, type: 3}
   explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
     type: 3}
+--- !u!114 &232485372983608523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8502207953827892182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243c96bc7baee1645ad2aa72b88e6ccc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 823814055449988710}
+        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
+        m_MethodName: Death
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onHeal:
+    m_PersistentCalls:
+      m_Calls: []
+  startingHealth: 1
+  maxHealth: 1
+  invincibilityTime: 0
 --- !u!114 &8502207953823719026
 MonoBehaviour:
   m_ObjectHideFlags: 0

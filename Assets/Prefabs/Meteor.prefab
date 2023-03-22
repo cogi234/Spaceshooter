@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 449742}
   - component: {fileID: 4637442077855996286}
   - component: {fileID: 9120685976991709960}
+  - component: {fileID: 6439505666143865675}
   - component: {fileID: 4320028}
   - component: {fileID: 522834624}
   - component: {fileID: 522834625}
@@ -37,7 +38,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &4637442077855996286
 CircleCollider2D:
@@ -86,14 +87,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48d5135ac31506428022f26eba4acb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1
   points: 10
   shooting: 0
   shootCooldown: 0
-  bulletSprite: {fileID: 0}
   bulletSpeed: 0
+  bulletSprite: {fileID: 0}
   explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
     type: 3}
+--- !u!114 &6439505666143865675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243c96bc7baee1645ad2aa72b88e6ccc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 9120685976991709960}
+        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
+        m_MethodName: Death
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 0
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onHeal:
+    m_PersistentCalls:
+      m_Calls: []
+  startingHealth: 1
+  maxHealth: 1
+  invincibilityTime: 0
 --- !u!114 &4320028
 MonoBehaviour:
   m_ObjectHideFlags: 0

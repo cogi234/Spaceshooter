@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 413534}
   - component: {fileID: 327669688}
   - component: {fileID: 327669692}
+  - component: {fileID: 3666755041330279018}
   - component: {fileID: 327669693}
   - component: {fileID: 327669694}
   - component: {fileID: 781496167797702922}
@@ -91,11 +92,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97b8ab26b5003b440856fd02de58057b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootCooldown: 0.25
+  shootCooldown: 0.2
   bulletSprite: {fileID: 21300000, guid: d5697b3c488f24c4189ebae3f3f49af0, type: 3}
   bulletSpeed: 15
-  damageCooldown: 1
   playerSpeed: 7.5
+--- !u!114 &3666755041330279018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243c96bc7baee1645ad2aa72b88e6ccc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 327669692}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Death
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onHeal:
+    m_PersistentCalls:
+      m_Calls: []
+  startingHealth: 1
+  maxHealth: 3
+  invincibilityTime: 2
 --- !u!58 &327669693
 CircleCollider2D:
   m_ObjectHideFlags: 0

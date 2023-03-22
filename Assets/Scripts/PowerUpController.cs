@@ -6,7 +6,7 @@ public class PowerUpController : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Player"))
         {
-            col.gameObject.GetComponent<PlayerController>().PowerUp();
+            col.gameObject.GetComponent<HealthComponent>().Heal(1);
             Destroy(gameObject);
         }
     }
