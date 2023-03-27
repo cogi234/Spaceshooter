@@ -92,24 +92,21 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!isGameOver)
-        {
-            //Powerup spawning
-            powerUpTimer -= Time.deltaTime;
-            if (powerUpTimer <= 0)
-                SpawnPowerUp();
+        //Powerup spawning
+        powerUpTimer -= Time.deltaTime;
+        if (powerUpTimer <= 0)
+            SpawnPowerUp();
 
-            //Difficulty depends on time
-            difficulty = Mathf.Pow(difficultyScaling, (Time.timeSinceLevelLoad / 60));
+        //Difficulty depends on time
+        difficulty = Mathf.Pow(difficultyScaling, (Time.timeSinceLevelLoad / 60));
 
-            //Meteor Spawning
-            if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
-                SpawnMeteor();
+        //Meteor Spawning
+        if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
+            SpawnMeteor();
 
-            //Enemy Spawning
-            if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
-                SpawnFormation();
-        }
+        //Enemy Spawning
+        if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
+            SpawnFormation();
     }
 
     void SpawnMeteor()
@@ -175,33 +172,16 @@ public class GameManager : MonoBehaviour
     }
 
     //Game Over stuff
-    [SerializeField] TextMeshProUGUI gameOverText;
-    bool isGameOver = false;
     public void GameOver()
     {
-        isGameOver = true;
         int highScore = PlayerPrefs.GetInt("highscore", 0);
         
         if (score > highScore)
-        {
             PlayerPrefs.SetInt("highscore", score);
-            PlayerPrefs.Save();
-            gameOverText.text = $"New Highscore!!!\n{score}";
-        } else
-        {
-            gameOverText.text = $"Highscore: {highScore}\nScore: {score}";
-        }
-        scoreText.gameObject.SetActive(false);
-        gameOverText.gameObject.SetActive(true);
+        PlayerPrefs.SetInt("lastScore", score);
+        PlayerPrefs.Save();
 
-        StartCoroutine(LoadMenu());
-    }
-
-    IEnumerator LoadMenu()
-    {
-        //On attends 5 secondes
-        yield return new WaitForSeconds(5);
-        //Puis on load le menu
+        //On load le score menu
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }
