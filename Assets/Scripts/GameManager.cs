@@ -1,9 +1,15 @@
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class SpawningController : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
+    //Spawning stuff:
+    
     MyObjectPool meteorPool;
     MyObjectPool enemyPool;
     [SerializeField] GameObject powerUpPrefab;
@@ -62,30 +68,48 @@ public class SpawningController : MonoBehaviour
     [SerializeField] List<GameObject> enemyFormations;
     [SerializeField] List<int> formationWeights;
 
+    /// <summary>
+    /// How much time between powerups
+    /// </summary>
+    [SerializeField] float timeBetweenPowerUps = 30;
+    float powerUpTimer;
+
     //Where do we spawn stuff:
     float spawningY, minX, maxX;
 
     private void Awake()
     {
+        //We calculate the limits of the screen
         spawningY = Camera.main.orthographicSize + 1;
         maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 1.5f;
         minX = -maxX;
-
+        //We find our objectPools
         meteorPool = GameObject.Find("ObjPoolMeteor").GetComponent<MyObjectPool>();
         enemyPool = GameObject.Find("ObjPoolEnemy").GetComponent<MyObjectPool>();
+        //We initialise the powerup timer
+        powerUpTimer = timeBetweenPowerUps;
     }
 
     void Update()
     {
-        difficulty = Mathf.Pow(difficultyScaling, (Time.timeSinceLevelLoad / 60));
+        if (!isGameOver)
+        {
+            //Powerup spawning
+            powerUpTimer -= Time.deltaTime;
+            if (powerUpTimer <= 0)
+                SpawnPowerUp();
 
-        //Meteor Spawning
-        if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
-            SpawnMeteor();
+            //Difficulty depends on time
+            difficulty = Mathf.Pow(difficultyScaling, (Time.timeSinceLevelLoad / 60));
 
-        //Enemy Spawning
-        if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
-            SpawnFormation();
+            //Meteor Spawning
+            if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
+                SpawnMeteor();
+
+            //Enemy Spawning
+            if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
+                SpawnFormation();
+        }
     }
 
     void SpawnMeteor()
@@ -114,6 +138,7 @@ public class SpawningController : MonoBehaviour
             }
         }
 
+        //On instantie la formation selectionner
         GameObject formation = Instantiate(enemyFormations[formationIndex], new Vector2(Random.Range(minX, maxX), spawningY), Quaternion.identity);
         EnemySpawner[] spawners = formation.GetComponentsInChildren<EnemySpawner>();
 
@@ -132,6 +157,52 @@ public class SpawningController : MonoBehaviour
 
     public void SpawnPowerUp()
     {
+        powerUpTimer = timeBetweenPowerUps;
         GameObject powerUp = Instantiate(powerUpPrefab, new Vector2(Random.Range(minX, maxX), spawningY), Quaternion.identity);
     }
+
+    //Score stuff:
+    [SerializeField] TextMeshProUGUI scoreText;
+    int score;
+    public int Score
+    {
+        get { return score; }
+        set
+        {
+            score = value;
+            scoreText.text = $"Score: {score}";
+        }
+    }
+
+    //Game Over stuff
+    [SerializeField] TextMeshProUGUI gameOverText;
+    bool isGameOver = false;
+    public void GameOver()
+    {
+        isGameOver = true;
+        int highScore = PlayerPrefs.GetInt("highscore", 0);
+        
+        if (score > highScore)
+        {
+            PlayerPrefs.SetInt("highscore", score);
+            PlayerPrefs.Save();
+            gameOverText.text = $"New Highscore!!!\n{score}";
+        } else
+        {
+            gameOverText.text = $"Highscore: {highScore}\nScore: {score}";
+        }
+        scoreText.gameObject.SetActive(false);
+        gameOverText.gameObject.SetActive(true);
+
+        StartCoroutine(LoadMenu());
+    }
+
+    IEnumerator LoadMenu()
+    {
+        //On attends 5 secondes
+        yield return new WaitForSeconds(5);
+        //Puis on load le menu
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
 }
+

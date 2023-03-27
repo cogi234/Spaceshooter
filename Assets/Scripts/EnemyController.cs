@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     MyObjectPool bulletPool;
-    ScoreManager scoreManager;
+    GameManager gameManager;
     Transform playerTransform;
     AudioSource audioSource;
     [SerializeField] int points;
@@ -30,7 +30,7 @@ public class EnemyController : MonoBehaviour
 
     private void OnEnable()
     {
-        scoreManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<ScoreManager>();
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         if (shooting)
         {
@@ -42,7 +42,7 @@ public class EnemyController : MonoBehaviour
     public void Death()
     {
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-        scoreManager.Score += points;
+        gameManager.Score += points;
         gameObject.SetActive(false);
     }
 
