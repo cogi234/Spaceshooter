@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
 
         //On load le score menu
-        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        SceneManager.LoadScene("ScoreMenu", LoadSceneMode.Single);
     }
 }
 
