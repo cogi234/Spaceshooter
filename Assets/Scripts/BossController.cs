@@ -2,34 +2,54 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BossController : MonoBehaviour
 {
     //References necessaires
     GameManager gameManager;
     SpriteRenderer coreSpriteRenderer;
+    MyObjectPool bulletPool;
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
+    [SerializeField] Transform leftGun, centerGun, rightGun;
+    [SerializeField] GameObject explosionPrefab;
+    [SerializeField] Sprite bulletSprite;
+    Slider healthBar;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
     /// <summary>
+    /// Le nombre de points donnes par le boss
+    /// </summary>
+    [SerializeField] int points = 1000;
+    /// <summary>
     /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
     /// </summary>
     Dictionary<Func<IEnumerator>, int> attacks;
-    int phase = 1;
 
+    // phases 1,2,3,4
+    int phase = 1;
+    //Est-ce qu'on peut commencer une nouvelle attaque?
+    bool canAttack = false;
 
     private void Awake()
     {
+        //Tout initialiser
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         gameManager.pauseEnemySpawning = true;
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
+        healthBar = GetComponentInChildren<Slider>();
+        healthBar.maxValue = myHealth.maxHealth;
+        healthBar.value = myHealth.Health;
+        bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
+
+        InitializeAttacks();
     }
 
     private IEnumerator Start()
     {
-        //Le boss peut pas prendre de dommage quand il apparait
+        //Le boss ne peut pas prendre de dommage quand il apparait
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
             col.enabled = false;
@@ -52,22 +72,43 @@ public class BossController : MonoBehaviour
             distance = Vector3.Distance(transform.position, mainPosition);
         }
 
+        //Le boss peut maintenant prendre du dommage
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
             col.enabled = true;
         }
+        canAttack = true;
     }
 
-    //Le boss peut maintenant prendre du dommage
     private void OnDestroy()
     {
         gameManager.pauseEnemySpawning = false;
     }
 
+    private void Update()
+    {
+        if (canAttack)
+        {
+            //On trouve les attaques possibles dans la phase dans laquelle on est
+            List<Func<IEnumerator>> possibleAttacks = new List<Func<IEnumerator>>();
+            foreach (KeyValuePair<Func<IEnumerator>, int> kv in attacks)
+            {
+                if (kv.Value <= phase)
+                    possibleAttacks.Add(kv.Key);
+            }
+
+            //Puis on commence une attaque aleatoire parmis celles-ci
+            StartCoroutine(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)]());
+
+            //On ne peut plus commencer une attaque
+            canAttack = false;
+        }
+    }
 
 
     public void OnCoreDamage(int damage, int health)
     {
+        healthBar.value = myHealth.Health;
         float healthpercent = (float)health / (float)myHealth.maxHealth;
 
         int newPhase = 4 - Mathf.FloorToInt(healthpercent * 4);
@@ -90,4 +131,75 @@ public class BossController : MonoBehaviour
             rightShieldGen.Heal(int.MaxValue);
         }
     }
+
+    public void OnDeath()
+    {
+        StartCoroutine(DeathCoroutine());
+    }
+
+    IEnumerator DeathCoroutine()
+    {
+        //On donne les points
+        gameManager.Score += points;
+        //On desactive les collisions
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = false;
+        }
+        //Combien de temps la sequence de mort va-t-elle prendre
+        float timer = 5;
+        float explosionChancePerSecond = 10;
+        while (timer >= 0)
+        {
+            if (UnityEngine.Random.value <= explosionChancePerSecond * Time.deltaTime)
+            {
+                Vector3 explosionPosition = transform.GetChild(UnityEngine.Random.Range(0, transform.childCount)).position;
+                Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
+            }
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
+
+
+
+    void ShootBullet(Vector3 position, Quaternion rotation, float speed)
+    {
+        GameObject projectile = bulletPool.GetElement();
+        projectile.transform.position = position;
+        projectile.transform.rotation = rotation;
+        projectile.GetComponent<BulletController>().targetTags = new List<string> { "Player" };
+        projectile.GetComponent<SpriteRenderer>().sprite = bulletSprite;
+        projectile.GetComponent<ConstantMovement>().speed = speed;
+        projectile.SetActive(true);
+    }
+
+    void InitializeAttacks()
+    {
+
+    }
+
+    IEnumerator BulletCircleAttack()
+    {
+        float timer = 5;
+
+        while (timer >= 0)
+        {
+            //A chaque seconde, on lance un cercle de balles
+            if (Mathf.FloorToInt(timer) > Mathf.FloorToInt(timer - Time.deltaTime))
+            {
+
+            }
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+
+        canAttack = true;
+    }
+
 }
