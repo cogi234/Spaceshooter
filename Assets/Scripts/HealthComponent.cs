@@ -35,7 +35,6 @@ public class HealthComponent : MonoBehaviour
         {
             //On prends du dommage
             health -= damage;
-            onDamage.Invoke(damage, health);
 
             //On se met le timer d'invincibilite
             invincibilityTimer = invincibilityTime;
@@ -43,10 +42,12 @@ public class HealthComponent : MonoBehaviour
             //Si il ne reste plus de vie
             if (health <= 0)
             {
+                health = 0;
                 //On meurt
                 onDeath.Invoke();
             }
 
+            onDamage.Invoke(damage, health);
         }
     }
 

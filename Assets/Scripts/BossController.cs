@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BossController : MonoBehaviour
 {
+    //References necessaires
     GameManager gameManager;
+    SpriteRenderer coreSpriteRenderer;
+    [SerializeField] List<Sprite> coreSprites;
+    [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
@@ -14,13 +19,16 @@ public class BossController : MonoBehaviour
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         gameManager.pauseEnemySpawning = true;
+        coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
     }
 
     private IEnumerator Start()
     {
-        
-
-
+        //Le boss peut pas prendre de dommage quand il apparait
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = false;
+        }
 
         //Bouger vers la position principale
         Vector3 direction = (mainPosition - transform.position).normalized;
@@ -38,12 +46,27 @@ public class BossController : MonoBehaviour
             //On calcule la nouvelle distance
             distance = Vector3.Distance(transform.position, mainPosition);
         }
+
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = true;
+        }
     }
 
+    //Le boss peut maintenant prendre du dommage
     private void OnDestroy()
     {
         gameManager.pauseEnemySpawning = false;
     }
 
 
+
+    public void OnCoreDamage(int damage, int health)
+    {
+        float healthpercent = (float)health / (float)myHealth.maxHealth;
+
+        Debug.Log(Mathf.FloorToInt(healthpercent * 4));
+
+        coreSpriteRenderer.sprite = coreSprites[Mathf.FloorToInt(healthpercent * 4)];
+    }
 }
