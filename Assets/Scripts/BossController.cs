@@ -12,6 +12,7 @@ public class BossController : MonoBehaviour
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
     [SerializeField] GameObject explosionPrefab;
+    [SerializeField] Transform leftGun, centerGun, rightGun;
     Slider healthBar;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
