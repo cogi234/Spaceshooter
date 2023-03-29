@@ -900,11 +900,12 @@ MonoBehaviour:
   myHealth: {fileID: 373764374}
   leftShieldGen: {fileID: 372228554}
   rightShieldGen: {fileID: 1950428568}
-  explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
-    type: 3}
   leftGun: {fileID: 4944905490707394088}
   centerGun: {fileID: 7887330185863578115}
   rightGun: {fileID: 621652290605820519}
+  explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
+    type: 3}
+  bulletSprite: {fileID: 21300000, guid: 8b2b3d2ad596be649b588b1c90b79c00, type: 3}
   mainPosition: {x: 0, y: 3, z: 0}
   movementSpeed: 4
   points: 1000
