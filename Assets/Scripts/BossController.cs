@@ -71,9 +71,11 @@ public class BossController : MonoBehaviour
         float healthpercent = (float)health / (float)myHealth.maxHealth;
 
         int newPhase = 4 - Mathf.FloorToInt(healthpercent * 4);
-        Debug.Log($"Old phase: {phase}    New phase: {newPhase}");
         if (newPhase > phase)
+        {
+            phase = newPhase;
             ChangePhase();
+        }
 
         coreSpriteRenderer.sprite = coreSprites[Mathf.FloorToInt(healthpercent * 4)];
     }
