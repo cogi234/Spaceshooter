@@ -9,10 +9,12 @@ public class BossController : MonoBehaviour
     //References necessaires
     GameManager gameManager;
     SpriteRenderer coreSpriteRenderer;
+    MyObjectPool bulletPool;
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
-    [SerializeField] GameObject explosionPrefab;
     [SerializeField] Transform leftGun, centerGun, rightGun;
+    [SerializeField] GameObject explosionPrefab;
+    [SerializeField] Sprite bulletSprite;
     Slider healthBar;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
@@ -40,6 +42,9 @@ public class BossController : MonoBehaviour
         healthBar = GetComponentInChildren<Slider>();
         healthBar.maxValue = myHealth.maxHealth;
         healthBar.value = myHealth.Health;
+        bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
+
+        InitializeAttacks();
     }
 
     private IEnumerator Start()
@@ -158,4 +163,43 @@ public class BossController : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+
+
+    void ShootBullet(Vector3 position, Quaternion rotation, float speed)
+    {
+        GameObject projectile = bulletPool.GetElement();
+        projectile.transform.position = position;
+        projectile.transform.rotation = rotation;
+        projectile.GetComponent<BulletController>().targetTags = new List<string> { "Player" };
+        projectile.GetComponent<SpriteRenderer>().sprite = bulletSprite;
+        projectile.GetComponent<ConstantMovement>().speed = speed;
+        projectile.SetActive(true);
+    }
+
+    void InitializeAttacks()
+    {
+
+    }
+
+    IEnumerator BulletCircleAttack()
+    {
+        float timer = 5;
+
+        while (timer >= 0)
+        {
+            //A chaque seconde, on lance un cercle de balles
+            if (Mathf.FloorToInt(timer) > Mathf.FloorToInt(timer - Time.deltaTime))
+            {
+
+            }
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+
+        canAttack = true;
+    }
+
 }
