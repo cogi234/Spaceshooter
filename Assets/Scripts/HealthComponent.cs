@@ -8,8 +8,14 @@ public class HealthComponent : MonoBehaviour
 {
     //Les events pour quand on prends du dommage ou meurt
     public UnityEvent onDeath = new UnityEvent();
-    public UnityEvent onDamage = new UnityEvent();
-    public UnityEvent onHeal = new UnityEvent();
+    /// <summary>
+    /// Prends dommage pris et vie restante comme argument
+    /// </summary>
+    public UnityEvent<int, int> onDamage = new UnityEvent<int, int>();
+    /// <summary>
+    /// Prends guerison et vie restante comme argument
+    /// </summary>
+    public UnityEvent<int, int> onHeal = new UnityEvent<int, int>();
 
     //Combien de vie on a
     public int startingHealth = 1;
@@ -29,7 +35,7 @@ public class HealthComponent : MonoBehaviour
         {
             //On prends du dommage
             health -= damage;
-            onDamage.Invoke();
+            onDamage.Invoke(damage, health);
 
             //On se met le timer d'invincibilite
             invincibilityTimer = invincibilityTime;
@@ -53,7 +59,7 @@ public class HealthComponent : MonoBehaviour
                 health = maxHealth;
             else
                 health += healing;
-            onHeal.Invoke();
+            onHeal.Invoke(healing, health);
         }
     }
 

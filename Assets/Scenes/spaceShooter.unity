@@ -475,14 +475,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3666755041330279018, guid: 59f74b7a76eda1d40985f7b6cca27abd,
         type: 3}
+      propertyPath: onDamage.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3666755041330279018, guid: 59f74b7a76eda1d40985f7b6cca27abd,
+        type: 3}
       propertyPath: onDeath.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 1768645415}
+    - target: {fileID: 3666755041330279018, guid: 59f74b7a76eda1d40985f7b6cca27abd,
+        type: 3}
+      propertyPath: onDamage.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 293121058}
+    - target: {fileID: 3666755041330279018, guid: 59f74b7a76eda1d40985f7b6cca27abd,
+        type: 3}
+      propertyPath: onDamage.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59f74b7a76eda1d40985f7b6cca27abd, type: 3}
+--- !u!1 &293121058 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 167144, guid: 59f74b7a76eda1d40985f7b6cca27abd,
+    type: 3}
+  m_PrefabInstance: {fileID: 293121057}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &407425437
 GameObject:
   m_ObjectHideFlags: 0
@@ -1365,4 +1386,3 @@ MonoBehaviour:
   formationWeights: 280000001e000000140000000a000000
   timeBetweenPowerUps: 30
   scoreText: {fileID: 820980797}
-  gameOverText: {fileID: 148751143}

@@ -8,8 +8,11 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    float time = 0;
+
     //Spawning stuff:
-    
+    public bool pauseEnemySpawning = false;
+
     MyObjectPool meteorPool;
     MyObjectPool enemyPool;
     [SerializeField] GameObject powerUpPrefab;
@@ -92,21 +95,27 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        //Difficulty depends on time
+        difficulty = Mathf.Pow(difficultyScaling, (time / 60));
+
         //Powerup spawning
         powerUpTimer -= Time.deltaTime;
         if (powerUpTimer <= 0)
             SpawnPowerUp();
 
-        //Difficulty depends on time
-        difficulty = Mathf.Pow(difficultyScaling, (Time.timeSinceLevelLoad / 60));
+        if (!pauseEnemySpawning)
+        {
+            //Time increments
+            time += Time.deltaTime;
 
-        //Meteor Spawning
-        if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
-            SpawnMeteor();
+            //Meteor Spawning
+            if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
+                SpawnMeteor();
 
-        //Enemy Spawning
-        if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
-            SpawnFormation();
+            //Enemy Spawning
+            if (Random.value <= (enemyChance * difficulty * Time.deltaTime))
+                SpawnFormation();
+        }
     }
 
     void SpawnMeteor()
