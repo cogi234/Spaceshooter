@@ -20,7 +20,7 @@ public class HealthComponent : MonoBehaviour
     //Combien de vie on a
     public int startingHealth = 1;
     public int maxHealth = 1;
-    int health;
+    [SerializeField] int health;
     public int Health { get => health; }
 
     //Pour le temps d'invincibilite

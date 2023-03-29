@@ -13,6 +13,11 @@ public class BossController : MonoBehaviour
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
+    /// <summary>
+    /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
+    /// </summary>
+    Dictionary<Func<IEnumerator>, int> attacks;
+    int phase = 1;
 
 
     private void Awake()
@@ -65,8 +70,22 @@ public class BossController : MonoBehaviour
     {
         float healthpercent = (float)health / (float)myHealth.maxHealth;
 
-        Debug.Log(Mathf.FloorToInt(healthpercent * 4));
+        int newPhase = 4 - Mathf.FloorToInt(healthpercent * 4);
+        Debug.Log($"Old phase: {phase}    New phase: {newPhase}");
+        if (newPhase > phase)
+            ChangePhase();
 
         coreSpriteRenderer.sprite = coreSprites[Mathf.FloorToInt(healthpercent * 4)];
+    }
+
+    void ChangePhase()
+    {
+        //On change pas de phase si on est mort
+        if (myHealth.Health > 0)
+        {
+            //On reactive les generateur de bouclier
+            leftShieldGen.Heal(int.MaxValue);
+            rightShieldGen.Heal(int.MaxValue);
+        }
     }
 }

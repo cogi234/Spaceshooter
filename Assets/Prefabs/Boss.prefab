@@ -859,8 +859,9 @@ MonoBehaviour:
   onHeal:
     m_PersistentCalls:
       m_Calls: []
-  startingHealth: 30
-  maxHealth: 30
+  startingHealth: 40
+  maxHealth: 40
+  health: 0
   invincibilityTime: 0
 --- !u!1 &5138781241006839088
 GameObject:
@@ -1223,6 +1224,7 @@ MonoBehaviour:
         m_CallState: 2
   startingHealth: 10
   maxHealth: 10
+  health: 0
   invincibilityTime: 0
 --- !u!1 &5992752814270239295
 GameObject:
@@ -1618,6 +1620,7 @@ MonoBehaviour:
         m_CallState: 2
   startingHealth: 10
   maxHealth: 10
+  health: 0
   invincibilityTime: 0
 --- !u!1 &7385221537718052417
 GameObject:
