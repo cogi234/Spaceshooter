@@ -25,11 +25,15 @@ public class BossController : MonoBehaviour
     /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
     /// </summary>
     Dictionary<Func<IEnumerator>, int> attacks;
+
     // phases 1,2,3,4
     int phase = 1;
+    //Est-ce qu'on peut commencer une nouvelle attaque?
+    bool canAttack = false;
 
     private void Awake()
     {
+        //Tout initialiser
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         gameManager.pauseEnemySpawning = true;
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
@@ -63,18 +67,38 @@ public class BossController : MonoBehaviour
             distance = Vector3.Distance(transform.position, mainPosition);
         }
 
+        //Le boss peut maintenant prendre du dommage
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
             col.enabled = true;
         }
+        canAttack = true;
     }
 
-    //Le boss peut maintenant prendre du dommage
     private void OnDestroy()
     {
         gameManager.pauseEnemySpawning = false;
     }
 
+    private void Update()
+    {
+        if (canAttack)
+        {
+            //On trouve les attaques possibles dans la phase dans laquelle on est
+            List<Func<IEnumerator>> possibleAttacks = new List<Func<IEnumerator>>();
+            foreach (KeyValuePair<Func<IEnumerator>, int> kv in attacks)
+            {
+                if (kv.Value <= phase)
+                    possibleAttacks.Add(kv.Key);
+            }
+
+            //Puis on commence une attaque aleatoire parmis celles-ci
+            StartCoroutine(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)]());
+
+            //On ne peut plus commencer une attaque
+            canAttack = false;
+        }
+    }
 
 
     public void OnCoreDamage(int damage, int health)
@@ -124,7 +148,7 @@ public class BossController : MonoBehaviour
         {
             if (UnityEngine.Random.value <= explosionChancePerSecond * Time.deltaTime)
             {
-                Vector3 explosionPosition = transform.GetChild(UnityEngine.Random.Range(0, transform.childCount - 1)).position;
+                Vector3 explosionPosition = transform.GetChild(UnityEngine.Random.Range(0, transform.childCount)).position;
                 Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
             }
 
