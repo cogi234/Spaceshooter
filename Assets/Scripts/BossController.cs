@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BossController : MonoBehaviour
 {
@@ -10,26 +11,35 @@ public class BossController : MonoBehaviour
     SpriteRenderer coreSpriteRenderer;
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
+    [SerializeField] GameObject explosionPrefab;
+    Slider healthBar;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
     /// <summary>
+    /// Le nombre de points donnes par le boss
+    /// </summary>
+    [SerializeField] int points = 1000;
+    /// <summary>
     /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
     /// </summary>
     Dictionary<Func<IEnumerator>, int> attacks;
+    // phases 1,2,3,4
     int phase = 1;
-
 
     private void Awake()
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         gameManager.pauseEnemySpawning = true;
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
+        healthBar = GetComponentInChildren<Slider>();
+        healthBar.maxValue = myHealth.maxHealth;
+        healthBar.value = myHealth.Health;
     }
 
     private IEnumerator Start()
     {
-        //Le boss peut pas prendre de dommage quand il apparait
+        //Le boss ne peut pas prendre de dommage quand il apparait
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
             col.enabled = false;
@@ -68,6 +78,7 @@ public class BossController : MonoBehaviour
 
     public void OnCoreDamage(int damage, int health)
     {
+        healthBar.value = myHealth.Health;
         float healthpercent = (float)health / (float)myHealth.maxHealth;
 
         int newPhase = 4 - Mathf.FloorToInt(healthpercent * 4);
@@ -89,5 +100,37 @@ public class BossController : MonoBehaviour
             leftShieldGen.Heal(int.MaxValue);
             rightShieldGen.Heal(int.MaxValue);
         }
+    }
+
+    public void OnDeath()
+    {
+        StartCoroutine(DeathCoroutine());
+    }
+
+    IEnumerator DeathCoroutine()
+    {
+        //On donne les points
+        gameManager.Score += points;
+        //On desactive les collisions
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = false;
+        }
+        //Combien de temps la sequence de mort va-t-elle prendre
+        float timer = 5;
+        float explosionChancePerSecond = 10;
+        while (timer >= 0)
+        {
+            if (UnityEngine.Random.value <= explosionChancePerSecond * Time.deltaTime)
+            {
+                Vector3 explosionPosition = transform.GetChild(UnityEngine.Random.Range(0, transform.childCount - 1)).position;
+                Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
+            }
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
 }
