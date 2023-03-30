@@ -26,7 +26,7 @@ public class BossController : MonoBehaviour
     /// <summary>
     /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
     /// </summary>
-    Dictionary<Func<IEnumerator>, int> attacks;
+    Dictionary<Func<IEnumerator>, int> attacks = new Dictionary<Func<IEnumerator>, int>();
 
     // phases 1,2,3,4
     int phase = 1;
@@ -87,13 +87,13 @@ public class BossController : MonoBehaviour
 
     private void Update()
     {
-        if (canAttack)
+        if (canAttack && attacks.Count > 0)
         {
             //On trouve les attaques possibles dans la phase dans laquelle on est
             List<Func<IEnumerator>> possibleAttacks = new List<Func<IEnumerator>>();
             foreach (KeyValuePair<Func<IEnumerator>, int> kv in attacks)
             {
-                if (kv.Value <= phase)
+                if (kv.Value == phase)
                     possibleAttacks.Add(kv.Key);
             }
 
