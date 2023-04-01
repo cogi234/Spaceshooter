@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SpaceShooter.unity
     guid: 9e0b87a8e1c2c4a4aadacb3cb5767112
+  - enabled: 1
+    path: Assets/Scenes/ScoreMenu.unity
+    guid: 3cec2368b366930468ce99e47d53e09e
   m_configObjects: {}

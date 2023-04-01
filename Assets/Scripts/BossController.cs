@@ -10,6 +10,7 @@ public class BossController : MonoBehaviour
     GameManager gameManager;
     SpriteRenderer coreSpriteRenderer;
     MyObjectPool bulletPool;
+    MyObjectPool rocketPool;
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
     [SerializeField] Transform leftGun, centerGun, rightGun;
@@ -43,6 +44,7 @@ public class BossController : MonoBehaviour
         healthBar.maxValue = myHealth.maxHealth;
         healthBar.value = myHealth.Health;
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
+        bulletPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
 
         InitializeAttacks();
     }
@@ -168,13 +170,24 @@ public class BossController : MonoBehaviour
 
     void ShootBullet(Vector3 position, Quaternion rotation, float speed)
     {
-        GameObject projectile = bulletPool.GetElement();
-        projectile.transform.position = position;
-        projectile.transform.rotation = rotation;
-        projectile.GetComponent<BulletController>().targetTags = new List<string> { "Player" };
-        projectile.GetComponent<SpriteRenderer>().sprite = bulletSprite;
-        projectile.GetComponent<ConstantMovement>().speed = speed;
-        projectile.SetActive(true);
+        GameObject bullet = bulletPool.GetElement();
+        bullet.transform.position = position;
+        bullet.transform.rotation = rotation;
+        bullet.GetComponent<BulletController>().targetTags = new List<string> { "Player" };
+        bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
+        bullet.GetComponent<ConstantMovement>().speed = speed;
+        bullet.SetActive(true);
+    }
+
+    void ShootRocket(Vector3 position, Quaternion rotation, float speed, float rotationSpeed)
+    {
+        GameObject rocket = rocketPool.GetElement();
+        rocket.transform.position = position;
+        rocket.transform.rotation = rotation;
+        rocket.GetComponent<BulletController>().targetTags = new List<string> { "Player" };
+        rocket.GetComponent<ConstantMovement>().speed = speed;
+        rocket.GetComponent<RocketController>().rotationSpeed = rotationSpeed;
+        rocket.SetActive(true);
     }
 
     void InitializeAttacks()

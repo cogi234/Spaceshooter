@@ -1,35 +1,57 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RocketController : MonoBehaviour
 {
-    [SerializeField] float vitesse = 100;
-    Vector3 initialPosition;
-    float time;
-    GameObject Joueur;
-    Vector3 targetRotation;
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// La vitesse maximum de rotation
+    /// </summary>
+    public float rotationSpeed;
+    /// <summary>
+    /// La vitesse est multiplier par combien lorsque le joueur est trouver?
+    /// </summary>
+    [SerializeField] float targetLockSpeedMultiplier;
+    /// <summary>
+    /// La vitesse de rotation est multiplier par combien lorsque le joueur est trouver?
+    /// </summary>
+    [SerializeField] float targetLockRotationMultiplier;
+    ConstantMovement movement;
+    Transform player;
+    float targetRotationZ;
+    bool targetLocked = false;
+
+    private void Awake()
     {
-        Joueur = GameObject.FindGameObjectWithTag("Player");
-        
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        movement = GetComponent<ConstantMovement>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        targetRotation = Quaternion.LookRotation(new Vector3(0, 0, 1), Joueur.transform.position - transform.position).eulerAngles;
-        if (Mathf.Abs(targetRotation.z - transform.rotation.eulerAngles.z) > 1)
+        //Le joueur est dans quelle direction
+        targetRotationZ = Quaternion.LookRotation(new Vector3(0, 0, 1), player.position - transform.position).eulerAngles.z;
+        //Je dois tourner dans quelle direction pour aller vers le joueur?
+        float diff1 = targetRotationZ - transform.rotation.eulerAngles.z;
+        float diff2 = diff1 + (360 * Mathf.Sign(diff1) * -1);
+        float direction = Mathf.Abs(diff1) > Mathf.Abs(diff2)? Mathf.Sign(diff2) : Mathf.Sign(diff1);
+
+        //Je tourne a la vitesse desiree dans cette direction
+        transform.Rotate(new Vector3(0, 0, direction * rotationSpeed * Time.deltaTime));
+
+        //Si on est pointer vers le joueur, on augmente la vitesse et reduit la vitesse de rotation
+        if (!targetLocked && Mathf.Abs(targetRotationZ - transform.rotation.eulerAngles.z) < 1)
         {
-            transform.Translate(Vector3.up * 10 * Time.deltaTime, Space.Self);
-            transform.Rotate(new Vector3(0,0,180 * Time.deltaTime));
+            Debug.Log("Target Aquired!");
+            targetLocked = true;
+            movement.speed *= targetLockSpeedMultiplier;
+            rotationSpeed *= targetLockRotationMultiplier;
         }
-        time += Time.deltaTime;
     }
-    private void OnEnable()
+
+    private void OnDisable()
     {
-        initialPosition = transform.position;
-        time = 0;
+        targetLocked = false;
     }
 }
