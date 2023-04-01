@@ -13,7 +13,8 @@ public class BossController : MonoBehaviour
     MyObjectPool rocketPool;
     [SerializeField] List<Sprite> coreSprites;
     [SerializeField] HealthComponent myHealth, leftShieldGen, rightShieldGen;
-    [SerializeField] Transform leftGun, centerGun, rightGun;
+    [SerializeField] Transform leftGunTransform, centerGunTransform, rightGunTransform;
+    Transform coreTransform, leftShieldGenTransform, rightShieldGenTransform;
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] Sprite bulletSprite;
     Slider healthBar;
@@ -27,7 +28,7 @@ public class BossController : MonoBehaviour
     /// <summary>
     /// Chaque KeyValuePair a la fonction d'attaque comme clee et comme valeur a partir de quelle phase elle peut etre utilisee
     /// </summary>
-    Dictionary<Func<IEnumerator>, int> attacks = new Dictionary<Func<IEnumerator>, int>();
+    List<(Func<IEnumerator>, int)> attacks = new List<(Func<IEnumerator>, int)>();
 
     // phases 1,2,3,4
     int phase = 1;
@@ -44,7 +45,12 @@ public class BossController : MonoBehaviour
         healthBar.maxValue = myHealth.maxHealth;
         healthBar.value = myHealth.Health;
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
-        bulletPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
+        rocketPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
+
+        coreTransform = myHealth.transform;
+        leftShieldGenTransform = leftShieldGen.transform;
+        rightShieldGenTransform = rightShieldGen.transform;
+
 
         InitializeAttacks();
     }
@@ -93,18 +99,25 @@ public class BossController : MonoBehaviour
         {
             //On trouve les attaques possibles dans la phase dans laquelle on est
             List<Func<IEnumerator>> possibleAttacks = new List<Func<IEnumerator>>();
-            foreach (KeyValuePair<Func<IEnumerator>, int> kv in attacks)
+            foreach ((Func<IEnumerator>, int) tuple in attacks)
             {
-                if (kv.Value == phase)
-                    possibleAttacks.Add(kv.Key);
+                if (tuple.Item2 == phase)
+                    possibleAttacks.Add(tuple.Item1);
             }
 
-            //Puis on commence une attaque aleatoire parmis celles-ci
-            StartCoroutine(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)]());
+            //Puis on attends 2 secondes et commence une attaque aleatoire parmis celles-ci
+            StartCoroutine(WaitAndExecute(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)], 1.5f));
 
             //On ne peut plus commencer une attaque
             canAttack = false;
         }
+    }
+
+    //On attends un certaint temps avant de commencer une coroutine
+    IEnumerator WaitAndExecute(Func<IEnumerator> func, float time)
+    {
+        yield return new WaitForSeconds(time);
+        StartCoroutine(func());
     }
 
 
@@ -192,27 +205,71 @@ public class BossController : MonoBehaviour
 
     void InitializeAttacks()
     {
+        //Phase 1
+        attacks.Add((BulletCircleAttack, 1));
 
+        //Phase 2
+        attacks.Add((BulletCircleAttack, 2));
+
+        //Phase 3
+
+
+        //Phase 4
+        attacks.Add((DoubleBulletCircleAttack, 4));
     }
-
+    
+    //Les attaques:
     IEnumerator BulletCircleAttack()
     {
-        float timer = 5;
+        //Stuff to tweak for balance
+        float timeToShoot = 0.5f;
+        int shotNum = 4;
+        int bulletNum = 20;
 
-        while (timer >= 0)
+        //Calculated stuff
+        float anglePerBullet = 360 / bulletNum;
+        float offsetAngle = anglePerBullet / 4;
+
+        for (int j = 0; j < shotNum; j++)
         {
-            //A chaque seconde, on lance un cercle de balles
-            if (Mathf.FloorToInt(timer) > Mathf.FloorToInt(timer - Time.deltaTime))
+            for (int i = 0; i < bulletNum; i++)
             {
-
+                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
             }
-
-            timer -= Time.deltaTime;
-            yield return null;
+            offsetAngle *= -1;
+            yield return new WaitForSeconds(timeToShoot);
         }
 
-
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
         canAttack = true;
     }
 
+    IEnumerator DoubleBulletCircleAttack()
+    {
+        //Stuff to tweak for balance
+        float timeToShoot = 0.5f;
+        int shotNum = 4;
+        int bulletNum = 15;
+
+        //Calculated stuff
+        float anglePerBullet = 360 / bulletNum;
+        float offsetAngle = anglePerBullet / 4;
+
+        for (int j = 0; j < shotNum; j++)
+        {
+            for (int i = 0; i < bulletNum; i++)
+            {
+                ShootBullet(leftShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+            }
+            for (int i = 0; i < bulletNum; i++)
+            {
+                ShootBullet(rightShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+            }
+            offsetAngle *= -1;
+            yield return new WaitForSeconds(timeToShoot);
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
+        canAttack = true;
+    }
 }

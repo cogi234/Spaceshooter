@@ -43,7 +43,6 @@ public class RocketController : MonoBehaviour
         //Si on est pointer vers le joueur, on augmente la vitesse et reduit la vitesse de rotation
         if (!targetLocked && Mathf.Abs(targetRotationZ - transform.rotation.eulerAngles.z) < 1)
         {
-            Debug.Log("Target Aquired!");
             targetLocked = true;
             movement.speed *= targetLockSpeedMultiplier;
             rotationSpeed *= targetLockRotationMultiplier;

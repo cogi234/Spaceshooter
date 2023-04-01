@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,6 +32,9 @@ public class PlayerController : MonoBehaviour
 
     //La vie du joueur
     HealthComponent healthComponent;
+
+    //Pour la mort
+    [SerializeField] GameObject explosionPrefab;
 
 
     void Awake()
@@ -173,6 +177,19 @@ public class PlayerController : MonoBehaviour
     }
     public void Death()
     {
+        StartCoroutine(DeathCoroutine());
+    }
+
+    IEnumerator DeathCoroutine()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            Instantiate(explosionPrefab, transform.position + new Vector3(Random.value - 0.5f, Random.value - 0.5f), Quaternion.identity);
+
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        yield return new WaitForSeconds(0.5f);
         gameObject.SetActive(false);
     }
 }
