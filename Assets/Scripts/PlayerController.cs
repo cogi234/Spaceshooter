@@ -178,18 +178,26 @@ public class PlayerController : MonoBehaviour
     public void Death()
     {
         StartCoroutine(DeathCoroutine());
+        GetComponent<Collider2D>().enabled = false;
+        enabled = false;
     }
 
     IEnumerator DeathCoroutine()
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             Instantiate(explosionPrefab, transform.position + new Vector3(Random.value - 0.5f, Random.value - 0.5f), Quaternion.identity);
 
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(Random.Range(0.05f, 0.3f));
         }
 
-        yield return new WaitForSeconds(0.5f);
+        Instantiate(explosionPrefab, transform.position + new Vector3(Random.value - 0.5f, Random.value - 0.5f), Quaternion.identity);
+        yield return new WaitForSeconds(0.05f);
+        Instantiate(explosionPrefab, transform.position + new Vector3(Random.value - 0.5f, Random.value - 0.5f), Quaternion.identity);
+        yield return new WaitForSeconds(0.05f);
+        Instantiate(explosionPrefab, transform.position + new Vector3(Random.value - 0.5f, Random.value - 0.5f), Quaternion.identity);
+
+
         gameObject.SetActive(false);
     }
 }

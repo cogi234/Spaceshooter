@@ -190,6 +190,13 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("lastScore", score);
         PlayerPrefs.Save();
 
+        StartCoroutine(GameOverCoroutine());
+    }
+
+    IEnumerator GameOverCoroutine()
+    {
+        yield return new WaitForSeconds(3.5f);
+
         //On load le score menu
         SceneManager.LoadScene("ScoreMenu", LoadSceneMode.Single);
     }
