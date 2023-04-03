@@ -38,7 +38,7 @@ Transform:
   - {fileID: 8378280083070273206}
   - {fileID: 4498592458323533725}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &327669692
 MonoBehaviour:
@@ -56,6 +56,11 @@ MonoBehaviour:
   bulletSprite: {fileID: 21300000, guid: d5697b3c488f24c4189ebae3f3f49af0, type: 3}
   bulletSpeed: 15
   playerSpeed: 7.5
+  touchMovementDeadzone: 10
+  touchMovementRange: 100
+  laserClip: {fileID: 8300000, guid: 30e66bde95ae35c4fb65852f10b74701, type: 3}
+  powerupClip: {fileID: 8300000, guid: 1d3760a6af1293b4d9e405f89f58b9f1, type: 3}
+  hitClip: {fileID: 8300000, guid: 6c65bb036eedd38449f07c47ba79090e, type: 3}
   explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
     type: 3}
 --- !u!114 &3666755041330279018
@@ -99,10 +104,34 @@ MonoBehaviour:
         m_CallState: 2
   onDamage:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 327669692}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: TakeDamage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onHeal:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 327669692}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: GetHealed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   startingHealth: 1
   maxHealth: 3
   health: 0

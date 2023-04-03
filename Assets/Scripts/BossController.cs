@@ -18,7 +18,9 @@ public class BossController : MonoBehaviour
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] Sprite bulletSprite;
     Slider healthBar;
-    [SerializeField] AudioClip bossMusic;
+    //audio stuff
+    AudioSource audioSource;
+    [SerializeField] AudioClip bossMusic, laserClip, rocketClip, circleLaserClip;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
@@ -49,6 +51,7 @@ public class BossController : MonoBehaviour
         healthBar = GetComponentInChildren<Slider>();
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
         rocketPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
+        audioSource = GetComponent<AudioSource>();
 
         coreTransform = myHealth.transform;
         leftShieldGenTransform = leftShieldGen.transform;
@@ -200,7 +203,7 @@ public class BossController : MonoBehaviour
 
 
 
-    void ShootBullet(Vector3 position, Quaternion rotation, float speed)
+    void ShootBullet(Vector3 position, Quaternion rotation, float speed, bool sfx)
     {
         GameObject bullet = bulletPool.GetElement();
         bullet.transform.position = position;
@@ -209,9 +212,15 @@ public class BossController : MonoBehaviour
         bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
         bullet.GetComponent<ConstantMovement>().speed = speed;
         bullet.SetActive(true);
+
+        if (sfx)
+        {
+            audioSource.clip = laserClip;
+            audioSource.Play();
+        }
     }
 
-    void ShootRocket(Vector3 position, Quaternion rotation, float speed, float rotationSpeed)
+    void ShootRocket(Vector3 position, Quaternion rotation, float speed, float rotationSpeed, bool sfx)
     {
         GameObject rocket = rocketPool.GetElement();
         rocket.transform.position = position;
@@ -220,6 +229,12 @@ public class BossController : MonoBehaviour
         rocket.GetComponent<ConstantMovement>().speed = speed;
         rocket.GetComponent<RocketController>().rotationSpeed = rotationSpeed;
         rocket.SetActive(true);
+
+        if (sfx)
+        {
+            audioSource.clip = rocketClip;
+            audioSource.Play();
+        }
     }
 
     void InitializeAttacks()
@@ -264,8 +279,10 @@ public class BossController : MonoBehaviour
         {
             for (int i = 0; i < bulletNum; i++)
             {
-                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8, false);
             }
+            audioSource.clip = circleLaserClip;
+            audioSource.Play();
             offsetAngle *= -1;
             yield return new WaitForSeconds(timeToShoot);
         }
@@ -286,11 +303,13 @@ public class BossController : MonoBehaviour
         float anglePerBullet = 360 / bulletNum;
         float offsetAngle = 0;
 
+        audioSource.clip = circleLaserClip;
+        audioSource.Play();
         for (int j = 0; j < shotNum; j++)
         {
             for (int i = 0; i < bulletNum; i++)
             {
-                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8, false);
             }
             offsetAngle += offsetIncrement;
             yield return new WaitForSeconds(timeToShoot);
@@ -315,12 +334,14 @@ public class BossController : MonoBehaviour
         {
             for (int i = 0; i < bulletNum; i++)
             {
-                ShootBullet(leftShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+                ShootBullet(leftShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8, false);
             }
             for (int i = 0; i < bulletNum; i++)
             {
-                ShootBullet(rightShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+                ShootBullet(rightShieldGenTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8, false);
             }
+            audioSource.clip = circleLaserClip;
+            audioSource.Play();
             offsetAngle *= -1;
             yield return new WaitForSeconds(timeToShoot);
         }
@@ -367,7 +388,7 @@ public class BossController : MonoBehaviour
             transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 1.5f);
             if (currentTime >= timeToShoot)
             {
-                ShootRocket(coreTransform.position, Quaternion.identity, 6, 180);
+                ShootRocket(coreTransform.position, Quaternion.identity, 6, 180, true);
                 currentTime = 0;
             }
             currentTime += Time.deltaTime;
@@ -411,9 +432,9 @@ public class BossController : MonoBehaviour
 
             if (shootTimer <= 0)
             {
-                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
-                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
-                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8, true);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8, false);
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8, false);
                 shootTimer = shootCooldown;
                 shotCount--;
             }
@@ -467,7 +488,7 @@ public class BossController : MonoBehaviour
             //Je tire le gun si le cooldown a fini
             if (shootTimer <= 0)
             {
-                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8, true);
                 shootTimer = shootCooldown;
                 shotCount--;
             }
@@ -508,8 +529,8 @@ public class BossController : MonoBehaviour
             //Je tire le gun si le cooldown a fini
             if (shootTimer <= 0)
             {
-                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8);
-                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8, false);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8, true);
                 shootTimer = shootCooldown;
                 shotCount--;
             }
@@ -551,9 +572,9 @@ public class BossController : MonoBehaviour
             //Je tire le gun si le cooldown a fini
             if (shootTimer <= 0)
             {
-                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8);
-                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8);
-                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8, true);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8, false);
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8, false);
                 shootTimer = shootCooldown;
                 shotCount--;
             }

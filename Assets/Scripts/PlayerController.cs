@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
 
     //Pour le son
     AudioSource audioSource;
+    [SerializeField] AudioClip laserClip, powerupClip, hitClip;
 
     //La vie du joueur
     HealthComponent healthComponent;
@@ -132,6 +133,7 @@ public class PlayerController : MonoBehaviour
         if (healthComponent.Health <= 0) return;
 
         //On joue l'effet sonore du tir
+        audioSource.clip = laserClip;
         audioSource.Play();
 
         //On tire un nombre de balles correspondant a la vie
@@ -154,7 +156,13 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
-
+        audioSource.clip = hitClip;
+        audioSource.Play();
+    }
+    public void GetHealed()
+    {
+        audioSource.clip = powerupClip;
+        audioSource.Play();
     }
     public void Death()
     {

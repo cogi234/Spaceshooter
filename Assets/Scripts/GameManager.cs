@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     /// When does the boss spawn?
     /// </summary>
     [SerializeField] float bossSpawnTime = 30;
+    float bossSpawnTimer;
 
     /// <summary>
     /// A multiplier on spawning chances
@@ -94,6 +95,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        bossSpawnTimer = bossSpawnTime;
+
         audioSource = GetComponent<AudioSource>();
         //We calculate the limits of the screen
         spawningY = Camera.main.orthographicSize + 1;
@@ -116,17 +119,21 @@ public class GameManager : MonoBehaviour
         if (powerUpTimer <= 0)
             SpawnPowerUp();
 
-        //Boss spawning
-        if (Time.time >= bossSpawnTime && Time.time - Time.deltaTime < bossSpawnTime)
-        {
-            GameObject boss = Instantiate(bossPrefab);
-            boss.transform.position = new Vector3(0, 10);
-        }
+        
 
         if (!pauseEnemySpawning)
         {
             //Time increments
             time += Time.deltaTime;
+
+            //Boss spawning
+            bossSpawnTimer -= Time.deltaTime;
+            if (bossSpawnTimer <= 0)
+            {
+                GameObject boss = Instantiate(bossPrefab);
+                boss.transform.position = new Vector3(0, 10);
+                bossSpawnTimer = bossSpawnTime;
+            }
 
             //Meteor Spawning
             if (Random.value <= (meteorChance * difficulty * Time.deltaTime))
