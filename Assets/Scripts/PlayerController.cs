@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     //Pour le mouvement
     // Vitesse du joueur
     [SerializeField] float playerSpeed = 6;
+    [SerializeField] float touchMovementTreshold = 10;
     // Les limites de l'ecran
     float minY, maxY, minX, maxX;
     Vector2 direction = Vector2.zero;
@@ -53,7 +54,9 @@ public class PlayerController : MonoBehaviour
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-                direction = (touch.position - touch.rawPosition).normalized;
+                Vector2 rawDirection = touch.position - touch.rawPosition;
+                if (rawDirection.magnitude > touchMovementTreshold)
+                    direction = rawDirection.normalized;
             }
             //On tire si un deuxieme toucher est detecter
             shooting = Input.touchCount > 1;
