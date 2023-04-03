@@ -210,12 +210,15 @@ public class BossController : MonoBehaviour
     {
         //Phase 1
         attacks.Add((BulletCircleAttack, 1));
+        attacks.Add((BulletSpiralAttack, 1));
 
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
+        attacks.Add((BulletSpiralAttack, 2));
 
         //Phase 3
-
+        attacks.Add((DoubleBulletCircleAttack, 3));
+        attacks.Add((BulletSpiralAttack, 3));
 
         //Phase 4
         attacks.Add((DoubleBulletCircleAttack, 4));
@@ -227,7 +230,7 @@ public class BossController : MonoBehaviour
         //Stuff to tweak for balance
         float timeToShoot = 0.5f;
         int shotNum = 4;
-        int bulletNum = 20;
+        int bulletNum = 18;
 
         //Calculated stuff
         float anglePerBullet = 360 / bulletNum;
@@ -247,12 +250,38 @@ public class BossController : MonoBehaviour
         canAttack = true;
     }
 
+    IEnumerator BulletSpiralAttack()
+    {
+        //Stuff to tweak for balance
+        float timeToShoot = 0.1f;
+        int shotNum = 20;
+        int bulletNum = 8;
+        float offsetIncrement = 2.5f * Mathf.Sign(UnityEngine.Random.value - 0.5f); //Dans une direction aleatoire
+
+        //Calculated stuff
+        float anglePerBullet = 360 / bulletNum;
+        float offsetAngle = 0;
+
+        for (int j = 0; j < shotNum; j++)
+        {
+            for (int i = 0; i < bulletNum; i++)
+            {
+                ShootBullet(coreTransform.position, Quaternion.Euler(0, 0, (anglePerBullet * i) + offsetAngle), 8);
+            }
+            offsetAngle += offsetIncrement;
+            yield return new WaitForSeconds(timeToShoot);
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
+        canAttack = true;
+    }
+
     IEnumerator DoubleBulletCircleAttack()
     {
         //Stuff to tweak for balance
         float timeToShoot = 0.5f;
         int shotNum = 4;
-        int bulletNum = 15;
+        int bulletNum = 12;
 
         //Calculated stuff
         float anglePerBullet = 360 / bulletNum;
