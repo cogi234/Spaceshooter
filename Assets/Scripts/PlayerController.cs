@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,16 +12,10 @@ public class PlayerController : MonoBehaviour
     float elapsedTimeShoot;
 
     //Pour le mouvement
-    // Inputs
-    PlayerInputs inputs;
-    InputAction moveAction;
-    InputAction shootAction;
     // Vitesse du joueur
     [SerializeField] float playerSpeed = 6;
     // Les limites de l'ecran
     float minY, maxY, minX, maxX;
-    // La direction du mouvement
-    Vector2 direction = Vector2.zero;
 
     //Pour le son
     AudioSource audioSource;
@@ -45,53 +35,17 @@ public class PlayerController : MonoBehaviour
         maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 0.5f;
         minX = -maxX;
 
-        //On initialise les inputs
-        inputs = new PlayerInputs();
-        moveAction = inputs.FindAction("Move");
-        shootAction = inputs.FindAction("Shoot");
-
         //On initialise les references
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
         audioSource = GetComponent<AudioSource>();
         healthComponent = GetComponent<HealthComponent>();
     }
 
-    private void OnEnable()
-    {
-        //On active les inputs
-        shootAction.Enable();
-        moveAction.Enable();
-        moveAction.performed += (InputAction.CallbackContext ctx) =>
-        {
-            direction = ctx.ReadValue<Vector2>();
-        };
-        moveAction.canceled += _ =>
-        {
-            direction = Vector2.zero;
-        };
-
-    }
-
-    private void OnDisable()
-    {
-        //On desactive les inputs
-        shootAction.Disable();
-        moveAction.Disable();
-        moveAction.performed -= (InputAction.CallbackContext ctx) =>
-        {
-            direction = ctx.ReadValue<Vector2>();
-        };
-        moveAction.canceled -= _ =>
-        {
-            direction = Vector2.zero;
-        };
-    }
-
     void Update()
     {
         //On regarde si on veut et peut tirer
         elapsedTimeShoot += Time.deltaTime;
-        if (shootAction.IsPressed() && elapsedTimeShoot >= shootCooldown)
+        if (Input.GetButton("Shoot") && elapsedTimeShoot >= shootCooldown)
         {
             elapsedTimeShoot = 0;
             Shoot();
@@ -103,8 +57,10 @@ public class PlayerController : MonoBehaviour
 
     void Movement()
     {
+        Vector2 direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+
         //On bouge le joueur dans la direction des controles
-        transform.Translate(playerSpeed * Time.deltaTime * direction.normalized);
+        transform.Translate(playerSpeed * Time.deltaTime * direction);
 
         //Si le joueur bouge hors de l'ecran, on le met sur le bord
         //Horizontalement

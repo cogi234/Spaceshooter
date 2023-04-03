@@ -79,6 +79,9 @@ public class GameManager : MonoBehaviour
 
     //Where do we spawn stuff:
     float spawningY, minX, maxX;
+    public float SpawningY { get; }
+    public float MinX { get; }
+    public float MaxX { get; }
 
     private void Awake()
     {

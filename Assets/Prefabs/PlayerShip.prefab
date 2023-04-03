@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 413534}
-  - component: {fileID: 327669688}
   - component: {fileID: 327669692}
   - component: {fileID: 3666755041330279018}
   - component: {fileID: 327669693}
@@ -39,47 +38,8 @@ Transform:
   - {fileID: 8378280083070273206}
   - {fileID: 4498592458323533725}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &327669688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 167144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 9c888f0a6c0878b439ca7e05fe341514,
-    type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 8eef568b-d38a-426b-b1d1-3559baaa222c
-    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 03228d46-a108-4b59-a41f-1ea57742254d
-    m_ActionName: Player/Shoot[/Keyboard/space]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &327669692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +56,8 @@ MonoBehaviour:
   bulletSprite: {fileID: 21300000, guid: d5697b3c488f24c4189ebae3f3f49af0, type: 3}
   bulletSpeed: 15
   playerSpeed: 7.5
+  explosionPrefab: {fileID: 8503583381807913533, guid: b3d8d19a520d35541aee3c05eed49491,
+    type: 3}
 --- !u!114 &3666755041330279018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,6 +105,7 @@ MonoBehaviour:
       m_Calls: []
   startingHealth: 1
   maxHealth: 3
+  health: 0
   invincibilityTime: 2
 --- !u!58 &327669693
 CircleCollider2D:
