@@ -105,11 +105,14 @@ public class BossController : MonoBehaviour
                     possibleAttacks.Add(tuple.Item1);
             }
 
-            //Puis on attends 2 secondes et commence une attaque aleatoire parmis celles-ci
-            StartCoroutine(WaitAndExecute(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)], 1.5f));
+            if (possibleAttacks.Count > 0)
+            {
+                //Puis on attends 2 secondes et commence une attaque aleatoire parmis celles-ci
+                StartCoroutine(WaitAndExecute(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)], 1.5f));
 
-            //On ne peut plus commencer une attaque
-            canAttack = false;
+                //On ne peut plus commencer une attaque
+                canAttack = false;
+            }
         }
     }
 
