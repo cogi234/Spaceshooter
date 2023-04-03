@@ -45,8 +45,6 @@ public class BossController : MonoBehaviour
 
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
         healthBar = GetComponentInChildren<Slider>();
-        healthBar.maxValue = myHealth.maxHealth;
-        healthBar.value = myHealth.Health;
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
         rocketPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
 
@@ -60,6 +58,11 @@ public class BossController : MonoBehaviour
 
     private IEnumerator Start()
     {
+        //Initialiser la barre de vie
+        healthBar.maxValue = myHealth.maxHealth;
+        healthBar.value = myHealth.Health;
+
+
         //Le boss ne peut pas prendre de dommage quand il apparait
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
@@ -93,8 +96,11 @@ public class BossController : MonoBehaviour
 
     private void OnDestroy()
     {
-        gameManager.pauseEnemySpawning = false;
-        gameManager.ChangeMusic(gameManager.music);
+        if (gameManager != null)
+        {
+            gameManager.pauseEnemySpawning = false;
+            gameManager.ChangeMusic(gameManager.music);
+        }
     }
 
     private void Update()
