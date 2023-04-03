@@ -8,14 +8,24 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    //Music stuff
+    AudioSource audioSource;
+    public AudioClip music;
+    [SerializeField] float musicFadeTime = 2;
+
     float time = 0;
 
     //Spawning stuff:
     public bool pauseEnemySpawning = false;
-
     MyObjectPool meteorPool;
     MyObjectPool enemyPool;
     [SerializeField] GameObject powerUpPrefab;
+    [SerializeField] GameObject bossPrefab;
+
+    /// <summary>
+    /// When does the boss spawn?
+    /// </summary>
+    [SerializeField] float bossSpawnTime = 30;
 
     /// <summary>
     /// A multiplier on spawning chances
@@ -79,12 +89,12 @@ public class GameManager : MonoBehaviour
 
     //Where do we spawn stuff:
     float spawningY, minX, maxX;
-    public float SpawningY { get; }
-    public float MinX { get; }
-    public float MaxX { get; }
+    public float MinX { get => minX; }
+    public float MaxX { get => maxX; }
 
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         //We calculate the limits of the screen
         spawningY = Camera.main.orthographicSize + 1;
         maxX = (Camera.main.orthographicSize * Screen.width / Screen.height) - 1.5f;
@@ -105,6 +115,10 @@ public class GameManager : MonoBehaviour
         powerUpTimer -= Time.deltaTime;
         if (powerUpTimer <= 0)
             SpawnPowerUp();
+
+        //Boss spawning
+        if (Time.time >= bossSpawnTime && Time.time - Time.deltaTime < bossSpawnTime)
+            Instantiate(bossPrefab);
 
         if (!pauseEnemySpawning)
         {
@@ -203,5 +217,36 @@ public class GameManager : MonoBehaviour
         //On load le score menu
         SceneManager.LoadScene("ScoreMenu", LoadSceneMode.Single);
     }
+
+    public void ChangeMusic(AudioClip clip)
+    {
+        StartCoroutine(FadeMusic(clip));
+    }
+
+    IEnumerator FadeMusic(AudioClip clip)
+    {
+        float volume = audioSource.volume;
+
+        //Fade out
+        float timer = musicFadeTime / 2;
+        while(timer > 0)
+        {
+            audioSource.volume = Mathf.Lerp(0, volume, timer / (musicFadeTime / 2));
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        //Fade in
+        audioSource.clip = clip;
+        timer = musicFadeTime / 2;
+        while (timer > 0)
+        {
+            audioSource.volume = Mathf.Lerp(volume, 0, timer / (musicFadeTime / 2));
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+    }
+
+
 }
 

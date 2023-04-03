@@ -18,6 +18,7 @@ public class BossController : MonoBehaviour
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] Sprite bulletSprite;
     Slider healthBar;
+    [SerializeField] AudioClip bossMusic;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
     [SerializeField] float movementSpeed = 4;
@@ -40,6 +41,8 @@ public class BossController : MonoBehaviour
         //Tout initialiser
         gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         gameManager.pauseEnemySpawning = true;
+        gameManager.ChangeMusic(bossMusic);
+
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
         healthBar = GetComponentInChildren<Slider>();
         healthBar.maxValue = myHealth.maxHealth;
@@ -91,6 +94,7 @@ public class BossController : MonoBehaviour
     private void OnDestroy()
     {
         gameManager.pauseEnemySpawning = false;
+        gameManager.ChangeMusic(gameManager.music);
     }
 
     private void Update()
