@@ -222,12 +222,14 @@ public class BossController : MonoBehaviour
         attacks.Add((BulletCircleAttack, 1));
         attacks.Add((BulletSpiralAttack, 1));
         attacks.Add((MovingBlasterAttack, 1));
-        
+        attacks.Add((SingleBlasterAttack, 1));
+
 
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
         attacks.Add((BulletSpiralAttack, 2));
         attacks.Add((MovingBlasterAttack, 2));
+        attacks.Add((DoubleBlasterAttack, 2));
 
         //Phase 3
         attacks.Add((DoubleBulletCircleAttack, 3));
@@ -237,6 +239,7 @@ public class BossController : MonoBehaviour
         //Phase 4
         attacks.Add((DoubleBulletCircleAttack, 4));
         attacks.Add((RocketAttack, 4));
+        attacks.Add((TripleBlasterAttack, 4));
     }
     
     //Les attaques:
@@ -389,10 +392,10 @@ public class BossController : MonoBehaviour
     {
         //Stuff to tweak for balance
         float shootCooldown = 1;
-        float shootTimer = 1;
         float shotCount = 10;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        float shootTimer = shootCooldown;
 
         //On tire tout droit en bougeant pour se mettre devant le joueur
         while (shotCount > 0)
@@ -402,9 +405,9 @@ public class BossController : MonoBehaviour
 
             if (shootTimer <= 0)
             {
-                ShootBullet(leftGunTransform.position, Quaternion.Euler(0, 0, 180), 8);
-                ShootBullet(rightGunTransform.position, Quaternion.Euler(0, 0, 180), 8);
-                ShootBullet(centerGunTransform.position, Quaternion.Euler(0, 0, 180), 8);
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, 180), 8);
                 shootTimer = shootCooldown;
                 shotCount--;
             }
@@ -412,8 +415,6 @@ public class BossController : MonoBehaviour
             yield return null;
             shootTimer -= Time.deltaTime;
         }
-
-
 
         //Retourner a la position principale
         Vector3 returnDirection = (mainPosition - transform.position).normalized;
@@ -433,6 +434,132 @@ public class BossController : MonoBehaviour
         }
 
         //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
+        canAttack = true;
+    }
+
+    IEnumerator SingleBlasterAttack()
+    {
+        //Stuff to tweak for balance
+        float shootCooldown = 0.5f;
+        float shotCount = 15;
+        float rotationSpeed = 45;
+
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        float shootTimer = shootCooldown;
+
+        while (shotCount > 0)
+        {
+            //Le joueur est dans quelle direction
+            float targetZRotation = Quaternion.LookRotation(new Vector3(0, 0, 1), centerGunTransform.position - playerTransform.position).eulerAngles.z;
+            //Je dois tourner le gun dans quelle direction pour aller vers le joueur?
+            float diff1 = targetZRotation - centerGunTransform.rotation.eulerAngles.z;
+            float diff2 = diff1 + (360 * Mathf.Sign(diff1) * -1);
+            float direction = Mathf.Abs(diff1) > Mathf.Abs(diff2) ? Mathf.Sign(diff2) : Mathf.Sign(diff1);
+            //Je tourne a la vitesse desiree dans cette direction
+            centerGunTransform.Rotate(new Vector3(0, 0, direction * rotationSpeed * Time.deltaTime));
+
+            //Je tire le gun si le cooldown a fini
+            if (shootTimer <= 0)
+            {
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8);
+                shootTimer = shootCooldown;
+                shotCount--;
+            }
+
+            yield return null;
+            shootTimer -= Time.deltaTime;
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore et on reset les rotations des guns
+        centerGunTransform.rotation = Quaternion.identity;
+        canAttack = true;
+    }
+    IEnumerator DoubleBlasterAttack()
+    {
+        //Stuff to tweak for balance
+        float shootCooldown = 0.5f;
+        float shotCount = 15;
+        float rotationSpeed = 45;
+
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        List<Transform> guns = new List<Transform> { leftGunTransform, rightGunTransform };
+        float shootTimer = shootCooldown;
+
+        while (shotCount > 0)
+        {
+            foreach (Transform gun in guns)
+            {
+                //Le joueur est dans quelle direction
+                float targetZRotation = Quaternion.LookRotation(new Vector3(0, 0, 1), gun.position - playerTransform.position).eulerAngles.z;
+                //Je dois tourner le gun dans quelle direction pour aller vers le joueur?
+                float diff1 = targetZRotation - gun.rotation.eulerAngles.z;
+                float diff2 = diff1 + (360 * Mathf.Sign(diff1) * -1);
+                float direction = Mathf.Abs(diff1) > Mathf.Abs(diff2) ? Mathf.Sign(diff2) : Mathf.Sign(diff1);
+                //Je tourne a la vitesse desiree dans cette direction
+                gun.Rotate(new Vector3(0, 0, direction * rotationSpeed * Time.deltaTime));
+            }
+
+            //Je tire le gun si le cooldown a fini
+            if (shootTimer <= 0)
+            {
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8);
+                shootTimer = shootCooldown;
+                shotCount--;
+            }
+
+            yield return null;
+            shootTimer -= Time.deltaTime;
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore et on reset les rotations des guns
+        leftGunTransform.rotation = Quaternion.identity;
+        rightGunTransform.rotation = Quaternion.identity;
+        canAttack = true;
+    }
+    IEnumerator TripleBlasterAttack()
+    {
+        //Stuff to tweak for balance
+        float shootCooldown = 0.5f;
+        float shotCount = 15;
+        float rotationSpeed = 45;
+
+        Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        List<Transform> guns = new List<Transform> { leftGunTransform, centerGunTransform, rightGunTransform };
+        float shootTimer = shootCooldown;
+
+        while (shotCount > 0)
+        {
+            foreach (Transform gun in guns)
+            {
+                //Le joueur est dans quelle direction
+                float targetZRotation = Quaternion.LookRotation(new Vector3(0, 0, 1), gun.position - playerTransform.position).eulerAngles.z;
+                //Je dois tourner le gun dans quelle direction pour aller vers le joueur?
+                float diff1 = targetZRotation - gun.rotation.eulerAngles.z;
+                float diff2 = diff1 + (360 * Mathf.Sign(diff1) * -1);
+                float direction = Mathf.Abs(diff1) > Mathf.Abs(diff2) ? Mathf.Sign(diff2) : Mathf.Sign(diff1);
+                //Je tourne a la vitesse desiree dans cette direction
+                gun.Rotate(new Vector3(0, 0, direction * rotationSpeed * Time.deltaTime));
+            }
+
+            //Je tire le gun si le cooldown a fini
+            if (shootTimer <= 0)
+            {
+                ShootBullet(leftGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, leftGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(rightGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, rightGunTransform.rotation.eulerAngles.z + 180), 8);
+                ShootBullet(centerGunTransform.GetChild(0).position, Quaternion.Euler(0, 0, centerGunTransform.rotation.eulerAngles.z + 180), 8);
+                shootTimer = shootCooldown;
+                shotCount--;
+            }
+
+            yield return null;
+            shootTimer -= Time.deltaTime;
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore et on reset les rotations des guns
+        leftGunTransform.rotation = Quaternion.identity;
+        rightGunTransform.rotation = Quaternion.identity;
+        centerGunTransform.rotation = Quaternion.identity;
         canAttack = true;
     }
 }
