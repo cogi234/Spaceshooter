@@ -35,6 +35,8 @@ public class BossController : MonoBehaviour
     int phase = 1;
     //Est-ce qu'on peut commencer une nouvelle attaque?
     bool canAttack = false;
+    Coroutine currentAttack;
+    bool dying = false;
 
     private void Awake()
     {
@@ -105,7 +107,7 @@ public class BossController : MonoBehaviour
 
     private void Update()
     {
-        if (canAttack && attacks.Count > 0)
+        if (canAttack && !dying && attacks.Count > 0)
         {
             //On trouve les attaques possibles dans la phase dans laquelle on est
             List<Func<IEnumerator>> possibleAttacks = new List<Func<IEnumerator>>();
@@ -118,7 +120,7 @@ public class BossController : MonoBehaviour
             if (possibleAttacks.Count > 0)
             {
                 //Puis on attends 2 secondes et commence une attaque aleatoire parmis celles-ci
-                StartCoroutine(WaitAndExecute(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)], 1.5f));
+                currentAttack = StartCoroutine(WaitAndExecute(possibleAttacks[UnityEngine.Random.Range(0, possibleAttacks.Count)], 1.5f));
 
                 //On ne peut plus commencer une attaque
                 canAttack = false;
@@ -130,7 +132,7 @@ public class BossController : MonoBehaviour
     IEnumerator WaitAndExecute(Func<IEnumerator> func, float time)
     {
         yield return new WaitForSeconds(time);
-        StartCoroutine(func());
+        currentAttack = StartCoroutine(func());
     }
 
 
@@ -163,6 +165,10 @@ public class BossController : MonoBehaviour
     public void OnDeath()
     {
         StartCoroutine(DeathCoroutine());
+        if (currentAttack != null)
+        {
+            StopCoroutine(currentAttack);
+        }
     }
 
     IEnumerator DeathCoroutine()
@@ -440,7 +446,7 @@ public class BossController : MonoBehaviour
     IEnumerator SingleBlasterAttack()
     {
         //Stuff to tweak for balance
-        float shootCooldown = 0.5f;
+        float shootCooldown = 0.3f;
         float shotCount = 15;
         float rotationSpeed = 45;
 
@@ -477,7 +483,7 @@ public class BossController : MonoBehaviour
     IEnumerator DoubleBlasterAttack()
     {
         //Stuff to tweak for balance
-        float shootCooldown = 0.5f;
+        float shootCooldown = 0.3f;
         float shotCount = 15;
         float rotationSpeed = 45;
 
@@ -520,7 +526,7 @@ public class BossController : MonoBehaviour
     IEnumerator TripleBlasterAttack()
     {
         //Stuff to tweak for balance
-        float shootCooldown = 0.5f;
+        float shootCooldown = 0.3f;
         float shotCount = 15;
         float rotationSpeed = 45;
 

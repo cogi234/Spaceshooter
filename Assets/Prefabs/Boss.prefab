@@ -752,7 +752,7 @@ MonoBehaviour:
   bossMusic: {fileID: 8300000, guid: afb6f0a207b864b4fbee487bc0302b74, type: 3}
   mainPosition: {x: 0, y: 3, z: 0}
   movementSpeed: 4
-  points: 1000
+  points: 2500
 --- !u!1 &2447467471996069764
 GameObject:
   m_ObjectHideFlags: 0
