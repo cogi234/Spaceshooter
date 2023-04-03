@@ -213,20 +213,23 @@ public class BossController : MonoBehaviour
     void InitializeAttacks()
     {
         //Phase 1
-        //attacks.Add((BulletCircleAttack, 1));
-        //attacks.Add((BulletSpiralAttack, 1));
-        attacks.Add((RocketAttack, 1));
+        attacks.Add((BulletCircleAttack, 1));
+        attacks.Add((BulletSpiralAttack, 1));
+        
 
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
         attacks.Add((BulletSpiralAttack, 2));
+        attacks.Add((RocketAttack, 2));
 
         //Phase 3
         attacks.Add((DoubleBulletCircleAttack, 3));
         attacks.Add((BulletSpiralAttack, 3));
+        attacks.Add((RocketAttack, 3));
 
         //Phase 4
         attacks.Add((DoubleBulletCircleAttack, 4));
+        attacks.Add((RocketAttack, 4));
     }
     
     //Les attaques:
@@ -314,26 +317,46 @@ public class BossController : MonoBehaviour
         //Stuff to tweak for balance
         float timeToShoot = 0.5f;
         float currentTime = 0;
-        print(gameManager.MinX);
-        // Calculated stuff
-        while (transform.position.x > gameManager.MinX)
+        float maxX;
+        float minX;
+        int direction;
+        if (UnityEngine.Random.value < 0.5f)
         {
-            print('a');
-            yield return null;
-            transform.Translate(-Vector3.right * Time.deltaTime * movementSpeed * 2f);
+            minX = gameManager.MinX + 3f;
+            maxX = gameManager.MaxX - 3f;
+            direction = -1;
         }
-        while (transform.position.x > gameManager.MaxX)
+        else
+        {
+            minX = gameManager.MaxX - 3f;
+            maxX = gameManager.MinX + 3f;
+            direction = 1;
+        }
+        
+        // Calculated stuff
+        while (Mathf.Abs(transform.position.x - minX) > 0.2f)
         {
             yield return null;
-            transform.Translate(Vector3.right * Time.deltaTime * movementSpeed);
+            transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 3f);
+        }
+        direction = -direction;
+        while (Mathf.Abs(transform.position.x - maxX) > 0.2f)
+        {
+            yield return null;
+            transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 1.5f);
             if (currentTime >= timeToShoot)
             {
-                ShootRocket(transform.position, Quaternion.Euler(Vector3.up), 5, 5);
+                ShootRocket(coreTransform.position, Quaternion.identity, 6, 180);
+                currentTime = 0;
             }
             currentTime += Time.deltaTime;
-
         }
-
+        direction = -direction;
+        while (Mathf.Abs(transform.position.x) > 0.2f)
+        {
+            yield return null;
+            transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 1.5f);
+        }
         //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
         canAttack = true;
     }
