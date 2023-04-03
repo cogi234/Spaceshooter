@@ -118,7 +118,10 @@ public class GameManager : MonoBehaviour
 
         //Boss spawning
         if (Time.time >= bossSpawnTime && Time.time - Time.deltaTime < bossSpawnTime)
-            Instantiate(bossPrefab);
+        {
+            GameObject boss = Instantiate(bossPrefab);
+            boss.transform.position = new Vector3(0, 10);
+        }
 
         if (!pauseEnemySpawning)
         {
@@ -238,6 +241,7 @@ public class GameManager : MonoBehaviour
 
         //Fade in
         audioSource.clip = clip;
+        audioSource.Play();
         timer = musicFadeTime / 2;
         while (timer > 0)
         {

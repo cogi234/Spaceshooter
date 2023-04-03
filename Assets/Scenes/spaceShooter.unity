@@ -1361,7 +1361,7 @@ MonoBehaviour:
     type: 3}
   bossPrefab: {fileID: 1909295912204411167, guid: 0dc96a03cf4dfb345a6f492841ee7740,
     type: 3}
-  bossSpawnTime: 30
+  bossSpawnTime: 5
   difficulty: 1
   difficultyScaling: 1.1
   meteorChance: 1
