@@ -227,7 +227,6 @@ public class BossController : MonoBehaviour
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
         attacks.Add((BulletSpiralAttack, 2));
-        attacks.Add((RocketAttack, 2));
         attacks.Add((MovingBlasterAttack, 2));
 
         //Phase 3
