@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class BossController : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class BossController : MonoBehaviour
     Transform coreTransform, leftShieldGenTransform, rightShieldGenTransform;
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] Sprite bulletSprite;
-    Slider healthBar;
+    UnityEngine.UI.Slider healthBar;
     [SerializeField] AudioClip bossMusic;
 
     [SerializeField] Vector3 mainPosition = new Vector3(0, 3, 0);
@@ -44,7 +45,7 @@ public class BossController : MonoBehaviour
         gameManager.ChangeMusic(bossMusic);
 
         coreSpriteRenderer = myHealth.gameObject.GetComponent<SpriteRenderer>();
-        healthBar = GetComponentInChildren<Slider>();
+        healthBar = GetComponentInChildren<UnityEngine.UI.Slider>();
         bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
         rocketPool = GameObject.Find("ObjPoolRocket").GetComponent<MyObjectPool>();
 
@@ -221,12 +222,14 @@ public class BossController : MonoBehaviour
         //Phase 1
         attacks.Add((BulletCircleAttack, 1));
         attacks.Add((BulletSpiralAttack, 1));
+        attacks.Add((BlasterAttack, 1));
         
 
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
         attacks.Add((BulletSpiralAttack, 2));
         attacks.Add((RocketAttack, 2));
+        attacks.Add((BlasterAttack, 2));
 
         //Phase 3
         attacks.Add((DoubleBulletCircleAttack, 3));
@@ -326,6 +329,8 @@ public class BossController : MonoBehaviour
         float maxX;
         float minX;
         int direction;
+
+        // direction gauche droite aléatoire
         if (UnityEngine.Random.value < 0.5f)
         {
             minX = gameManager.MinX + 3f;
@@ -340,12 +345,15 @@ public class BossController : MonoBehaviour
         }
         
         // Calculated stuff
+        // premier déplacement
         while (Mathf.Abs(transform.position.x - minX) > 0.2f)
         {
             yield return null;
             transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 3f);
         }
+        // inverser la direction du déplacement
         direction = -direction;
+        // tirer et déplacement
         while (Mathf.Abs(transform.position.x - maxX) > 0.2f)
         {
             yield return null;
@@ -357,11 +365,35 @@ public class BossController : MonoBehaviour
             }
             currentTime += Time.deltaTime;
         }
-        direction = -direction;
+        // retourne x = 0
         while (Mathf.Abs(transform.position.x) > 0.2f)
         {
             yield return null;
-            transform.Translate(direction * Vector3.right * Time.deltaTime * movementSpeed * 1.5f);
+            transform.Translate(new Vector3(-transform.position.x, 0, 0).normalized * Time.deltaTime * movementSpeed * 1.5f);
+        }
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
+        canAttack = true;
+    }
+    IEnumerator BlasterAttack()
+    {
+        //Stuff to tweak for balance
+        Transform playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
+
+        // Calculated stuff
+        while (Mathf.Abs(coreTransform.position.x - playerPosition.position.x) > 0.5f)
+        {
+            yield return null;
+            transform.Translate(new Vector3(playerPosition.position.x,0,0).normalized * Time.deltaTime * movementSpeed * 5f);
+        }
+        ShootBullet(leftGunTransform.position, Quaternion.Euler(0, 0,180), 8);
+        ShootBullet(rightGunTransform.position, Quaternion.Euler(0, 0, 180), 8);
+        ShootBullet(centerGunTransform.position, Quaternion.Euler(0, 0, 180), 8);
+
+        // retourne x = 0
+        while (Mathf.Abs(transform.position.x) > 0.2f)
+        {
+            yield return null;
+            transform.Translate(new Vector3(-transform.position.x,0,0).normalized * Time.deltaTime * movementSpeed * 2f);
         }
         //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
         canAttack = true;
