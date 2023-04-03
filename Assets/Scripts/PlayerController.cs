@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,12 +11,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Sprite bulletSprite;
     [SerializeField] float bulletSpeed;
     float elapsedTimeShoot;
+    bool shooting = false;
 
     //Pour le mouvement
     // Vitesse du joueur
     [SerializeField] float playerSpeed = 6;
     // Les limites de l'ecran
     float minY, maxY, minX, maxX;
+    Vector2 direction = Vector2.zero;
 
     //Pour le son
     AudioSource audioSource;
@@ -43,9 +46,27 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Les inputs
+        if (Application.isMobilePlatform)//Controles mobile
+        {
+            //Si on touche a l'ecran, la direction de mouvement est la direction du toucher
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+                direction = (touch.position - touch.rawPosition).normalized;
+            }
+            //On tire si un deuxieme toucher est detecter
+            shooting = Input.touchCount > 1;
+        }
+        else//Controles ordinateur
+        {
+            direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+            shooting = Input.GetButton("Shoot");
+        }
+
         //On regarde si on veut et peut tirer
         elapsedTimeShoot += Time.deltaTime;
-        if (Input.GetButton("Shoot") && elapsedTimeShoot >= shootCooldown)
+        if (shooting && elapsedTimeShoot >= shootCooldown)
         {
             elapsedTimeShoot = 0;
             Shoot();
@@ -57,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
     void Movement()
     {
-        Vector2 direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+
 
         //On bouge le joueur dans la direction des controles
         transform.Translate(playerSpeed * Time.deltaTime * direction);
