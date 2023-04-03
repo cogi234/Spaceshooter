@@ -238,6 +238,7 @@ public class GameManager : MonoBehaviour
             timer -= Time.deltaTime;
             yield return null;
         }
+        audioSource.Stop();
 
         //Fade in
         audioSource.clip = clip;

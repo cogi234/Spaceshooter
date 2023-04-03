@@ -96,8 +96,11 @@ public class BossController : MonoBehaviour
 
     private void OnDestroy()
     {
-        gameManager.pauseEnemySpawning = false;
-        gameManager.ChangeMusic(gameManager.music);
+        if (gameManager != null)
+        {
+            gameManager.pauseEnemySpawning = false;
+            gameManager.ChangeMusic(gameManager.music);
+        }
     }
 
     private void Update()
