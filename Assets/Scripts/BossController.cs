@@ -213,8 +213,9 @@ public class BossController : MonoBehaviour
     void InitializeAttacks()
     {
         //Phase 1
-        attacks.Add((BulletCircleAttack, 1));
-        attacks.Add((BulletSpiralAttack, 1));
+        //attacks.Add((BulletCircleAttack, 1));
+        //attacks.Add((BulletSpiralAttack, 1));
+        attacks.Add((RocketAttack, 1));
 
         //Phase 2
         attacks.Add((BulletCircleAttack, 2));
@@ -303,6 +304,34 @@ public class BossController : MonoBehaviour
             }
             offsetAngle *= -1;
             yield return new WaitForSeconds(timeToShoot);
+        }
+
+        //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
+        canAttack = true;
+    }
+    IEnumerator RocketAttack()
+    {
+        //Stuff to tweak for balance
+        float timeToShoot = 0.5f;
+        float currentTime = 0;
+        print(gameManager.MinX);
+        // Calculated stuff
+        while (transform.position.x > gameManager.MinX)
+        {
+            print('a');
+            yield return null;
+            transform.Translate(-Vector3.right * Time.deltaTime * movementSpeed * 2f);
+        }
+        while (transform.position.x > gameManager.MaxX)
+        {
+            yield return null;
+            transform.Translate(Vector3.right * Time.deltaTime * movementSpeed);
+            if (currentTime >= timeToShoot)
+            {
+                ShootRocket(transform.position, Quaternion.Euler(Vector3.up), 5, 5);
+            }
+            currentTime += Time.deltaTime;
+
         }
 
         //On a fini d'attaquer, donc on peut dire au boss d'attaquer encore
