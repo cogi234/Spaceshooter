@@ -1363,11 +1363,11 @@ MonoBehaviour:
     type: 3}
   bossSpawnTime: 240
   difficulty: 1
-  difficultyScaling: 1.1
-  meteorChance: 1
+  difficultyScaling: 1.15
+  meteorChance: 2
   meteorSpeed: -3
   meteorHealth: 1
-  enemyChance: 0.2
+  enemyChance: 0.25
   enemySpeed: -2
   enemyHealth: 1
   enemyShootCooldown: 3

@@ -35,7 +35,7 @@ public class EnemyController : MonoBehaviour
         if (shooting)
         {
             bulletPool = GameObject.Find("ObjPoolBullet").GetComponent<MyObjectPool>();
-            shootTime = shootCooldown;
+            shootTime = Random.Range(0, shootCooldown);
         }
     }
 

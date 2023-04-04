@@ -268,8 +268,8 @@ public class BossController : MonoBehaviour
     {
         //Stuff to tweak for balance
         float timeToShoot = 0.5f;
-        int shotNum = 4;
-        int bulletNum = 18;
+        int shotNum = 5;
+        int bulletNum = 20;
 
         //Calculated stuff
         float anglePerBullet = 360 / bulletNum;
@@ -297,7 +297,7 @@ public class BossController : MonoBehaviour
         float timeToShoot = 0.1f;
         int shotNum = 20;
         int bulletNum = 8;
-        float offsetIncrement = 2.5f * Mathf.Sign(UnityEngine.Random.value - 0.5f); //Dans une direction aleatoire
+        float offsetIncrement = 3.5f * Mathf.Sign(UnityEngine.Random.value - 0.5f); //Dans une direction aleatoire
 
         //Calculated stuff
         float anglePerBullet = 360 / bulletNum;
@@ -324,7 +324,7 @@ public class BossController : MonoBehaviour
         //Stuff to tweak for balance
         float timeToShoot = 0.5f;
         int shotNum = 4;
-        int bulletNum = 12;
+        int bulletNum = 15;
 
         //Calculated stuff
         float anglePerBullet = 360 / bulletNum;
@@ -352,7 +352,7 @@ public class BossController : MonoBehaviour
     IEnumerator RocketAttack()
     {
         //Stuff to tweak for balance
-        float timeToShoot = 0.5f;
+        float timeToShoot = 0.4f;
         float currentTime = 0;
 
         //Calculated stuff
@@ -418,7 +418,7 @@ public class BossController : MonoBehaviour
     IEnumerator MovingBlasterAttack()
     {
         //Stuff to tweak for balance
-        float shootCooldown = 1;
+        float shootCooldown = 0.5f;
         float shotCount = 10;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -468,7 +468,7 @@ public class BossController : MonoBehaviour
     {
         //Stuff to tweak for balance
         float shootCooldown = 0.3f;
-        float shotCount = 15;
+        float shotCount = 10;
         float rotationSpeed = 45;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -505,7 +505,7 @@ public class BossController : MonoBehaviour
     {
         //Stuff to tweak for balance
         float shootCooldown = 0.3f;
-        float shotCount = 15;
+        float shotCount = 10;
         float rotationSpeed = 45;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -548,7 +548,7 @@ public class BossController : MonoBehaviour
     {
         //Stuff to tweak for balance
         float shootCooldown = 0.3f;
-        float shotCount = 15;
+        float shotCount = 10;
         float rotationSpeed = 45;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
