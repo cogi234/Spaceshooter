@@ -519,6 +519,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 327669692, guid: 59f74b7a76eda1d40985f7b6cca27abd, type: 3}
+      propertyPath: touchMovementDeadzone
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3666755041330279018, guid: 59f74b7a76eda1d40985f7b6cca27abd,
         type: 3}
       propertyPath: onDeath.m_PersistentCalls.m_Calls.Array.data[1].m_Target
