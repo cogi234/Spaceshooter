@@ -59,12 +59,14 @@ public class PlayerController : MonoBehaviour
                 Vector2 rawDirection = touch.position - touch.rawPosition;
                 if (rawDirection.magnitude > touchMovementDeadzone)
                     direction = rawDirection.normalized * Mathf.Min(1, rawDirection.magnitude / touchMovementRange); // la direction est scaled au range, pour avoir un mouvement plus graduel.
+                else
+                    direction = Vector2.zero;
             } else
             {
                 direction = Vector2.zero;
             }
-            //On tire si un deuxieme toucher est detecter
-            shooting = Input.touchCount > 1;
+            //On tire si un toucher est detecter
+            shooting = Input.touchCount > 0;
         }
         else//Controles ordinateur
         {
