@@ -418,7 +418,7 @@ public class BossController : MonoBehaviour
     IEnumerator MovingBlasterAttack()
     {
         //Stuff to tweak for balance
-        float shootCooldown = 0.5f;
+        float shootCooldown = 0.7f;
         float shotCount = 10;
 
         Transform playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
