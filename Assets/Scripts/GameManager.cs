@@ -13,7 +13,23 @@ public class GameManager : MonoBehaviour
     public AudioClip music;
     [SerializeField] float musicFadeTime = 2;
 
+
+    //Score stuff:
+    [SerializeField] TextMeshProUGUI scoreText;
+    int score;
+    public int Score
+    {
+        get { return score; }
+        set
+        {
+            score = value;
+            scoreText.text = $"Score: {score.ToString("D6")}";
+        }
+    }
+
+    //Time Stuff
     float time = 0;
+    [SerializeField] TextMeshProUGUI timeText;
 
     //Spawning stuff:
     public bool pauseEnemySpawning = false;
@@ -125,6 +141,7 @@ public class GameManager : MonoBehaviour
         {
             //Time increments
             time += Time.deltaTime;
+            timeText.text = $"Time: {((int)time).ToString("D5")}";
 
             //Boss spawning
             bossSpawnTimer -= Time.deltaTime;
@@ -192,19 +209,6 @@ public class GameManager : MonoBehaviour
     {
         powerUpTimer = timeBetweenPowerUps;
         GameObject powerUp = Instantiate(powerUpPrefab, new Vector2(Random.Range(minX, maxX), spawningY), Quaternion.identity);
-    }
-
-    //Score stuff:
-    [SerializeField] TextMeshProUGUI scoreText;
-    int score;
-    public int Score
-    {
-        get { return score; }
-        set
-        {
-            score = value;
-            scoreText.text = $"Score: {score}";
-        }
     }
 
     //Game Over stuff
